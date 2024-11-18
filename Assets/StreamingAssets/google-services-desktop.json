@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "417414078663",
+    "firebase_url": "https://shipshooting-default-rtdb.firebaseio.com",
+    "project_id": "shipshooting",
+    "storage_bucket": "shipshooting.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417414078663:android:67261a47c487a494de5ee2",
+        "android_client_info": {
+          "package_name": "com.UITProject.ShipShooting"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxwyA-tIyFR0Uo0gX2NffQHZlxHvFDoPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
