@@ -27,6 +27,14 @@ public class ShipUICtrl : BaseMonoBehaviour
         LoadBtnBuyDiamonds();
         LoadBtnBuyCoinsText();
         LoadBtnBuyDiamondsText();
+        LoadShipSO();
+    }
+
+    protected virtual void LoadShipSO()
+    {
+        if (this.shipProfileSO != null) return;
+        this.shipProfileSO = Resources.Load<ShipProfileSO>("Ship/" + transform.name);
+        Debug.Log(transform.name + ": LoadShipSO", gameObject);
     }
 
     protected virtual void LoadBtnBuyDiamondsText()
@@ -100,6 +108,6 @@ public class ShipUICtrl : BaseMonoBehaviour
         this.imgShip.sprite = shipProfileSO.sprite;
         this.btnBuyCoinsText.text = shipProfileSO.coins.ToString();
         this.btnBuyDiamondsText.text = shipProfileSO.diamonds.ToString();
-        this.levelUnlock.text = "Cấp độ mở khóa" + shipProfileSO.levelUnlock.ToString();
+        this.levelUnlock.text = "Cap do mo khoa: " + shipProfileSO.levelUnlock.ToString();
     }
 }

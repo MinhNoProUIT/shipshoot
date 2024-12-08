@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f05e0d4364096d74d9c88cce3f0b9a6d, type: 3}
-  m_Name: SH001
+  m_Name: SH008
   m_EditorClassIdentifier: 
-  ShipId: 1
-  ShipName: Ship1
+  ShipId: 8
+  ShipName: Ship8
   sprite: {fileID: 21300000, guid: 632d4cacac6d13c46ac6688c43c81f36, type: 3}
-  dameMax: 10
-  hpMax: 50
-  levelUnlock: 0
-  coins: 100
-  diamonds: 10
+  dameMax: 40
+  hpMax: 200
+  levelUnlock: 4
+  coins: 400
+  diamonds: 40
