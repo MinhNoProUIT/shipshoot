@@ -82,10 +82,11 @@ public class EmailLoginManager : BaseAuthManager
             if (task.IsCompletedSuccessfully)
             {
                 Debug.Log("Đăng nhập thành công!");
-                mainThreadContext.Post(_ =>
-                {
-                    SceneManager.LoadScene("Shopping");
-                }, null);
+                //PlayfabManager.Instance.LoginToPlayFab(task.Result.User.UserId);
+                //mainThreadContext.Post(_ =>
+                //{
+                 //   SceneManager.LoadScene("Shopping");
+//}, null);
             }
 
             FirebaseUser user = task.Result.User; 
@@ -96,8 +97,13 @@ public class EmailLoginManager : BaseAuthManager
             //UnityEngine.SceneManagement.SceneManager.LoadScene("Shopping");
             //LevelManager.instance.LoadScene("Shopping");
             Debug.Log("Bắt đầu load scene...");
-            SceneManager.LoadScene("Shopping");
-            Debug.Log("Scene đã được load (nếu dòng này không xuất hiện, kiểm tra Build Settings).");
+            mainThreadContext.Post(_ =>
+            {
+                PlayfabManager.Instance.LoginToPlayFab(user.UserId);
+                SceneManager.LoadScene("Shopping");
+            }, null);
+            //SceneManager.LoadScene("Shopping");
+            //Debug.Log("Scene đã được load (nếu dòng này không xuất hiện, kiểm tra Build Settings).");
 
 
         });
