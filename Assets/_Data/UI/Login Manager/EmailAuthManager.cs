@@ -22,7 +22,7 @@ public class EmailAuthManager : BaseAuthManager
         registerButton.onClick.AddListener(Register);
     }
 
-    protected override void SignIn()
+    public override void SignIn()
     {
         string email = emailInput.text;
         string password = passwordInput.text;
@@ -90,7 +90,7 @@ public class EmailAuthManager : BaseAuthManager
         confirmPasswordInput.text = string.Empty;
     }
 
-    protected override void SignOut()
+    public override void SignOut()
     {
         auth.SignOut();
     }

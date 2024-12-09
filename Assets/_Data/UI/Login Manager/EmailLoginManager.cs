@@ -6,6 +6,8 @@ using TMPro;
 using Firebase;
 using Firebase.Auth;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
+using System.Threading;
 
 public class EmailLoginManager : BaseAuthManager
 {
@@ -15,10 +17,14 @@ public class EmailLoginManager : BaseAuthManager
     [SerializeField] private TextMeshProUGUI forgotPasswordText;
     [SerializeField] private TextMeshProUGUI registerText;
     [SerializeField] protected Transform registerManager;
+    private SynchronizationContext mainThreadContext;
+
     protected override void Start()
     {
         base.Start();
         loginButton.onClick.AddListener(SignIn);
+        mainThreadContext = SynchronizationContext.Current;
+
         
         // Thêm EventTrigger cho forgotPasswordText
         EventTrigger forgotPasswordTrigger = forgotPasswordText.gameObject.AddComponent<EventTrigger>();
@@ -35,8 +41,20 @@ public class EmailLoginManager : BaseAuthManager
         registerTrigger.triggers.Add(registerEntry);
     }
 
-    protected override void SignIn()
+    public override  void SignIn()
     {
+        if (auth == null)
+        {
+            Debug.LogError("Auth is not initialized.");
+            return;
+        }
+
+        if (emailInput == null || passwordInput == null)
+        {
+            Debug.LogError("Email or Password input is not assigned.");
+            return;
+        }
+
         string email = emailInput.text;
         string password = passwordInput.text;
 
@@ -61,13 +79,26 @@ public class EmailLoginManager : BaseAuthManager
                 }
                 return;
             }
+            if (task.IsCompletedSuccessfully)
+            {
+                Debug.Log("Đăng nhập thành công!");
+                mainThreadContext.Post(_ =>
+                {
+                    SceneManager.LoadScene("Shopping");
+                }, null);
+            }
 
-            FirebaseUser user = task.Result.User;
+            FirebaseUser user = task.Result.User; 
             SaveUserData(user.UserId);
 
             Debug.Log($"Đăng nhập thành công với email: {user.Email}");
-            Debug.Log("Load scene");
-            UnityEngine.SceneManagement.SceneManager.LoadScene("GamePlay");
+            //Debug.Log("Load scene Shopping");
+            //UnityEngine.SceneManagement.SceneManager.LoadScene("Shopping");
+            //LevelManager.instance.LoadScene("Shopping");
+            Debug.Log("Bắt đầu load scene...");
+            SceneManager.LoadScene("Shopping");
+            Debug.Log("Scene đã được load (nếu dòng này không xuất hiện, kiểm tra Build Settings).");
+
 
         });
     }
@@ -106,7 +137,7 @@ public class EmailLoginManager : BaseAuthManager
         passwordInput.text = string.Empty;
     }
 
-    protected override void SignOut()
+    public override void SignOut()
     {
         auth.SignOut();
         Debug.Log("Đã đăng xuất");

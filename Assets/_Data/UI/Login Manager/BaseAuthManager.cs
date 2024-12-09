@@ -49,6 +49,6 @@ public abstract class BaseAuthManager : MonoBehaviour
         userRef.UpdateChildrenAsync(userData);
     }
 
-    protected abstract void SignIn();
-    protected abstract void SignOut();
+    public abstract void SignIn();
+    public abstract void SignOut();
 }

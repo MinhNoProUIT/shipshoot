@@ -6,6 +6,9 @@ using TMPro;
 using Firebase.Auth;
 using Firebase;
 using UnityEngine.EventSystems;
+using System;
+using System.Threading;
+
 public class EmailRegisterManager : BaseAuthManager
 {
     [SerializeField] private TMP_InputField emailInput;
@@ -15,9 +18,14 @@ public class EmailRegisterManager : BaseAuthManager
     [SerializeField] private TextMeshProUGUI backToLoginText;
     [SerializeField] protected Transform loginManager;
 
+    private SynchronizationContext mainThreadContext;
+
+
     protected override void Start()
     {
         base.Start();
+        mainThreadContext = SynchronizationContext.Current;
+
         registerButton.onClick.AddListener(Register);
         //backToLoginText.onClick.AddListener(OnBackToLoginClicked);
 
@@ -71,13 +79,22 @@ public class EmailRegisterManager : BaseAuthManager
                 return;
             }
 
-            FirebaseUser newUser = task.Result.User;
-            SaveUserData(newUser.UserId);
-            Debug.Log($"Đăng ký thành công với email: {newUser.Email}");
-            ClearInputFields();
-            
-            // Tự động chuyển về màn hình đăng nhập sau khi đăng ký thành công
-            OnBackToLoginClicked();
+            try
+            {
+                FirebaseUser newUser = task.Result.User;
+                Debug.Log($"Đăng ký thành công với email: {newUser.Email}");
+
+                ClearInputFields();
+                Debug.Log("Đã xóa các trường nhập liệu");
+
+                // Kiểm tra xem phương thức có được gọi không
+                Debug.Log("Gọi OnBackToLoginClicked");
+                OnBackToLoginClicked();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"An error occurred: {ex.Message}");
+            }
         });
     }
 
@@ -97,12 +114,12 @@ public class EmailRegisterManager : BaseAuthManager
         confirmPasswordInput.text = string.Empty;
     }
 
-    protected override void SignIn()
+    public override void SignIn()
     {
         // Không cần implement vì class này chỉ để đăng ký
     }
 
-    protected override void SignOut()
+    public override void SignOut()
     {
         // Không cần implement vì class này chỉ để đăng ký
     }
