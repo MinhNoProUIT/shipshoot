@@ -56,7 +56,7 @@ public class PlayfabManager : BaseMonoBehaviour
         };
 
         PlayFabClientAPI.UpdateUserData(request, OnDataUpdateSuccess, OnDataUpdateFailure);
-        Debug.Log("Đẩy dữ liệu thành công(Ship)!");
+        //Debug.Log("Đẩy dữ liệu thành công(Ship)!");
     }
 
     private void OnDataUpdateSuccess(UpdateUserDataResult result)

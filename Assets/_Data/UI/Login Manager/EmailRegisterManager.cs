@@ -61,40 +61,46 @@ public class EmailRegisterManager : BaseAuthManager
                 FirebaseException firebaseEx = task.Exception?.GetBaseException() as FirebaseException;
                 AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
 
-                switch (errorCode)
+                mainThreadContext.Post(_ =>
                 {
-                    case AuthError.EmailAlreadyInUse:
-                        Debug.LogWarning("Email đã được sử dụng!");
-                        break;
-                    case AuthError.WeakPassword:
-                        Debug.LogWarning("Mật khẩu quá yếu!");
-                        break;
-                    case AuthError.InvalidEmail:
-                        Debug.LogWarning("Email không hợp lệ!");
-                        break;
-                    default:
-                        Debug.LogError($"Đăng ký thất bại: {firebaseEx.Message}");
-                        break;
-                }
+                    switch (errorCode)
+                    {
+                        case AuthError.EmailAlreadyInUse:
+                            Debug.LogWarning("Email đã được sử dụng!");
+                            break;
+                        case AuthError.WeakPassword:
+                            Debug.LogWarning("Mật khẩu quá yếu!");
+                            break;
+                        case AuthError.InvalidEmail:
+                            Debug.LogWarning("Email không hợp lệ!");
+                            break;
+                        default:
+                            Debug.LogError($"Đăng ký thất bại: {firebaseEx.Message}");
+                            break;
+                    }
+                }, null);
                 return;
             }
 
-            try
+            mainThreadContext.Post(_ =>
             {
-                FirebaseUser newUser = task.Result.User;
-                Debug.Log($"Đăng ký thành công với email: {newUser.Email}");
+                try
+                {
+                    FirebaseUser newUser = task.Result.User;
+                    Debug.Log($"Đăng ký thành công với email: {newUser.Email}");
 
-                ClearInputFields();
-                Debug.Log("Đã xóa các trường nhập liệu");
+                    ClearInputFields();
+                    Debug.Log("Đã xóa các trường nhập liệu");
 
-                // Kiểm tra xem phương thức có được gọi không
-                Debug.Log("Gọi OnBackToLoginClicked");
-                OnBackToLoginClicked();
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"An error occurred: {ex.Message}");
-            }
+                    // Kiểm tra xem phương thức có được gọi không
+                    Debug.Log("Gọi OnBackToLoginClicked");
+                    OnBackToLoginClicked();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"An error occurred: {ex.Message}");
+                }
+            }, null);
         });
     }
 
