@@ -7,13 +7,15 @@ public class DamageSender : BaseMonoBehaviour
     public virtual void Send(Transform obj)
     {
         DamageReceiver damageReceiver = obj.GetComponentInChildren<DamageReceiver>();
+        Debug.Log("DamageReceiver: " + obj.name);
         if (damageReceiver == null) return;
         this.Send(damageReceiver);
-        this.CreateImpactFX();
+        
     }
 
     public virtual void Send(DamageReceiver damageReceiver)
     {
+        this.CreateImpactFX();
         damageReceiver.Deduct(this.damage);
     }
 

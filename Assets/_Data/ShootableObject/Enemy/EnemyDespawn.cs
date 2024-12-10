@@ -7,6 +7,7 @@ public class EnemyDespawn : DespawnByDistance
     public override void DespawnObject()
     {
         EnemySpawner.Instance.Despawn(transform.parent);
+        LevelByKillEnemy.Instance.EnemyKilled();
     }
 
     protected override void ResetValue()

@@ -21,6 +21,7 @@ public class BulletDamSender : DamageSender
 
     public override void Send(DamageReceiver damageReceiver)
     {
+        if(this.bulletCtrl.Shooter.tag == damageReceiver.transform.parent.tag) return;
         base.Send(damageReceiver);
         this.DestroyBullet();
     }

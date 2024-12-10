@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShipId: 1
   ShipName: Ship1
-  sprite: {fileID: 21300000, guid: 632d4cacac6d13c46ac6688c43c81f36, type: 3}
+  sprite: {fileID: 21300000, guid: 04d0b6c2193f7f64891e528744743754, type: 3}
   dameMax: 10
   hpMax: 50
   levelUnlock: 0

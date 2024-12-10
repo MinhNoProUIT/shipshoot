@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ShipBoundaryScreen : ObjMoveFoward
 {
+    [Header("Boundary Screen")]
     [SerializeField] protected float leftBoundary;
     [SerializeField] protected float rightBoundary;
     [SerializeField] protected float topBoundary;

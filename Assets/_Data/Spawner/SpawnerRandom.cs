@@ -28,6 +28,7 @@ public class SpawnerRandom : BaseMonoBehaviour
         this.JunkSpawning();
     }
 
+
     protected virtual void JunkSpawning()
     {
         if (this.RandomReachLimit()) return;
@@ -49,5 +50,10 @@ public class SpawnerRandom : BaseMonoBehaviour
     {
         int currentJunk = this.spawnerCtrl.Spawner.SpawnedCount;
         return currentJunk >= this.randomLimit;
+    }
+
+    public virtual void SetRandomLimit(int limit)
+    {
+        this.randomLimit = limit;
     }
 }
