@@ -100,7 +100,7 @@ public class EmailLoginManager : BaseAuthManager
             mainThreadContext.Post(_ =>
             {
                 PlayfabManager.Instance.LoginToPlayFab(user.UserId);
-                SceneManager.LoadScene("Shopping");
+                SceneManager.LoadScene("MainScene");
             }, null);
             //SceneManager.LoadScene("Shopping");
             //Debug.Log("Scene đã được load (nếu dòng này không xuất hiện, kiểm tra Build Settings).");

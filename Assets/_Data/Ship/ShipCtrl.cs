@@ -10,6 +10,8 @@ public class ShipCtrl : AbilityObjectCtrl
     [SerializeField] protected Inventory inventory;
     public Inventory Inventory => inventory;
     //[SerializeField] protected Slider slider;
+    [SerializeField] protected ShipProfileSO shipProfileSO;
+    public ShipProfileSO ShipProfileSO => shipProfileSO;
 
     protected override string GetObjectTypeString()
     {

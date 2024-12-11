@@ -3,7 +3,6 @@ using UnityEngine;
 public class DamageSender : BaseMonoBehaviour
 {
     [SerializeField] protected int damage = 1;
-
     public virtual void Send(Transform obj)
     {
         DamageReceiver damageReceiver = obj.GetComponentInChildren<DamageReceiver>();
@@ -32,5 +31,10 @@ public class DamageSender : BaseMonoBehaviour
     protected virtual string GetImpactFX()
     {
         return FXSpawner.impact1;
+    }
+
+    public virtual void SetDamage(int damage)
+    {
+        this.damage = damage;
     }
 }
