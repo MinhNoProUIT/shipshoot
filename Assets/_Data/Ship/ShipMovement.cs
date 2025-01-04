@@ -6,7 +6,7 @@ public class ShipMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float speed = 5f;  // Tốc độ di chuyển
-    [SerializeField] private float minDistance = 0.1f;  // Khoảng cách tối thiểu để ngừng di chuyển
+    //[SerializeField] private float minDistance = 0.1f;  // Khoảng cách tối thiểu để ngừng di chuyển
 
     private Vector3 targetPosition;
 

@@ -8,6 +8,7 @@ public class ObjectSpawner : MonoBehaviour
     public float spacing = 1f; // Khoảng cách giữa các đối tượng
     public Vector2 spawnAreaCenter = Vector2.zero; // Tâm của vùng spawn
     public Vector2 spawnAreaSize = new Vector2(5f, 3f); // Kích thước vùng spawn
+    public Vector2 startPosition = Vector2.zero;
 
     protected virtual void Start()
     {
@@ -18,8 +19,10 @@ public class ObjectSpawner : MonoBehaviour
     {
         //OnDrawGizmosSelected();
         // Tính toán vị trí bắt đầu spawn
-        Vector2 startPosition = spawnAreaCenter - spawnAreaSize / 2f + new Vector2(spacing/2f, spacing/2f);
-
+        //Vector2 startPosition = spawnAreaCenter - spawnAreaSize / 2f + new Vector2(spacing/2f, spacing/2f);
+        
+        startPosition.x = spawnAreaCenter.x - spawnAreaSize.x / 2f;
+        startPosition.y = spawnAreaCenter.y + spawnAreaSize.y / 2f;
         for (int row = 0; row < numRows; row++)
         {
             for (int col = 0; col < numCols; col++)
