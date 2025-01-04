@@ -94,6 +94,7 @@ public abstract class Spawner : BaseMonoBehaviour
     {
         this.poolObjs.Add(obj);
         obj.gameObject.SetActive(false);
+        if(LevelByKillEnemy.Instance.LevelCurrent == 1 ) return;
         this.spawnedCount--;
     }
 

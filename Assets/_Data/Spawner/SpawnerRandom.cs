@@ -32,6 +32,7 @@ public class SpawnerRandom : BaseMonoBehaviour
     protected virtual void JunkSpawning()
     {
         if (this.RandomReachLimit()) return;
+        if(LevelByKillEnemy.Instance.LevelCurrent == 1) return;
 
         this.randomTimer += Time.fixedDeltaTime;
         if (this.randomTimer < this.randomDelay) return;

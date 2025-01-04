@@ -1,9 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using PlayFab.EconomyModels;
 using UnityEngine;
 
-public class ShipBoundaryScreen : ObjMoveFoward
+public class ShipBoundaryScreen : BaseMonoBehaviour
 {
+    [SerializeField] protected Vector3 targetPosition;
+    [SerializeField] protected float speed = 0.01f;
+    [SerializeField] protected float distance = 1f;
+    [SerializeField] protected float minDistance = 1f;
+
     [Header("Boundary Screen")]
     [SerializeField] protected float leftBoundary;
     [SerializeField] protected float rightBoundary;
@@ -38,9 +44,29 @@ public class ShipBoundaryScreen : ObjMoveFoward
         transform.parent.position = clampedPosition;
     }
 
-    protected override void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
-        base.FixedUpdate();
+        this.Moving();
         ClampPositionWithinBoundaries();
+    }
+
+    public virtual void SetSpeed(float speed)
+    {
+        this.speed = speed;
+    }
+
+    protected virtual void Moving()
+    {
+        /* this.distance = Vector3.Distance(transform.position, this.targetPosition);
+        if (this.distance < this.minDistance) return; */
+        GetMousePosition();
+
+        Vector3 newPos = Vector3.Lerp(transform.parent.position, targetPosition, this.speed);
+        transform.parent.position = newPos;
+    }
+
+    public virtual void GetMousePosition(){
+        this.targetPosition = InputManager.Instance.MouseWorldPos;
+        this.targetPosition.z = 0;
     }
 }
