@@ -7,9 +7,12 @@ public class ShipProfileSO : ScriptableObject
 {
     public IdShip ShipId = IdShip.NoId;
     public string ShipName;
+    public string Description;
+
     public Sprite sprite;
     public int dameMax;
     public int hpMax;
+    public int speedMovement;
     public int levelUnlock;
     public int coins;
     public int diamonds;

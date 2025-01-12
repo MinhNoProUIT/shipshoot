@@ -1,192 +1,121 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Inventory : BaseMonoBehaviour
 {
-    [SerializeField] protected int maxSlot = 7;
-    [SerializeField] protected List<ItemInventory> items;
-    public List<ItemInventory> Items => items;
+    [SerializeField] protected int maxSlot = 7; // Số lượng slot tối đa trong inventory
+    [SerializeField] protected List<ItemInventory> items; // Danh sách các item trong inventory
+
+    public List<ItemInventory> Items => items; // Truy cập danh sách item từ bên ngoài
 
     protected override void Start()
     {
         base.Start();
-        //this.AddItem(ItemCode.CopperSword, 1);
-        //this.AddItem(ItemCode.GoldOre, 10);
-        //this.AddItem(ItemCode.IronOre, 10);
+        // Khởi tạo inventory (nếu cần)
     }
 
+    /// <summary>
+    /// Thêm item vào inventory. Cộng dồn nếu đã tồn tại, hoặc thêm mới nếu chưa tồn tại.
+    /// </summary>
     public virtual bool AddItem(ItemInventory itemInventory)
     {
-        int addCount = itemInventory.itemCount;
         ItemProfileSO itemProfile = itemInventory.itemProfile;
         ItemCode itemCode = itemProfile.itemCode;
-        ItemType itemType = itemProfile.itemType;
 
-        if (itemType == ItemType.Equiment) return this.AddEquiment(itemInventory);
-        return this.AddItem(itemCode, addCount);
-    }
+        // Tìm item hiện có trong inventory
+        ItemInventory existingItem = GetItemByCode(itemCode);
 
-    public virtual bool AddEquiment(ItemInventory itemPicked)
-    {
-        if (this.IsInventoryFull()) return false;
-
-        ItemInventory item = itemPicked.Clone();
-        
-        this.items.Add(item);
-        return true;
-    }
-
-    public virtual bool AddItem(ItemCode itemCode, int addCount)
-    {
-
-        ItemProfileSO itemProfile = this.GetItemProfile(itemCode);
-
-        int addRemain = addCount;
-        int newCount;
-        int itemMaxStack;
-        int addMore;
-        ItemInventory itemExist;
-        for (int i = 0; i < this.maxSlot; i++)
+        if (existingItem != null)
         {
-            itemExist = this.GetItemNotFullStack(itemCode);
-            if (itemExist == null)
-            {
-                if (this.IsInventoryFull()) return false;
+            // Cộng dồn số lượng
+            existingItem.itemCount += itemInventory.itemCount;
+        }
+        else
+        {
+            if (IsInventoryFull()) return false;
 
-                itemExist = this.CreateEmptyItem(itemProfile);
-                this.items.Add(itemExist);
-            }
-
-            newCount = itemExist.itemCount + addRemain;
-
-            itemMaxStack = this.GetMaxStack(itemExist);
-            if (newCount > itemMaxStack)
-            {
-                addMore = itemMaxStack - itemExist.itemCount;
-                newCount = itemExist.itemCount + addMore;
-                addRemain -= addMore;
-            }
-            else
-            {
-                addRemain -= newCount;
-            }
-
-            itemExist.itemCount = newCount;
-            if (addRemain < 1) break;
+            // Thêm item mới vào inventory
+            ItemInventory newItem = itemInventory.Clone();
+            this.items.Add(newItem);
         }
 
         return true;
     }
 
+    /// <summary>
+    /// Kiểm tra inventory có đầy không.
+    /// </summary>
     protected virtual bool IsInventoryFull()
     {
-        if (this.items.Count >= this.maxSlot) return true;
-        return false;
+        return this.items.Count >= this.maxSlot;
     }
 
-    protected virtual int GetMaxStack(ItemInventory itemInventory)
+    /// <summary>
+    /// Lấy item từ inventory dựa trên mã code.
+    /// </summary>
+    protected virtual ItemInventory GetItemByCode(ItemCode itemCode)
     {
-        if (itemInventory == null) return 0;
-
-        return itemInventory.maxStack;
-    }
-
-    protected virtual ItemProfileSO GetItemProfile(ItemCode itemCode)
-    {
-        var profiles = Resources.LoadAll("Item", typeof(ItemProfileSO));
-        foreach (ItemProfileSO profile in profiles)
+        foreach (ItemInventory item in this.items)
         {
-            if (profile.itemCode != itemCode) continue;
-            return profile;
+            if (item.itemProfile.itemCode == itemCode)
+            {
+                return item;
+            }
         }
         return null;
     }
 
-    protected virtual ItemInventory GetItemNotFullStack(ItemCode itemCode)
-    {
-        foreach (ItemInventory itemInventory in this.items)
-        {
-            if (itemCode != itemInventory.itemProfile.itemCode) continue;
-            if (this.IsFullStack(itemInventory)) continue;
-            return itemInventory;
-        }
-
-        return null;
-    }
-
-    protected virtual bool IsFullStack(ItemInventory itemInventory)
-    {
-        if (itemInventory == null) return true;
-
-        int maxStack = this.GetMaxStack(itemInventory);
-        return itemInventory.itemCount >= maxStack;
-    }
-
-    protected virtual ItemInventory CreateEmptyItem(ItemProfileSO itemProfile)
-    {
-        ItemInventory itemInventory = new ItemInventory
-        {
-            itemProfile = itemProfile,
-            maxStack = itemProfile.defaultMaxStack
-        };
-
-        return itemInventory;
-    }
-
+    /// <summary>
+    /// Kiểm tra tổng số lượng item có đủ yêu cầu không.
+    /// </summary>
     public virtual bool ItemCheck(ItemCode itemCode, int numberCheck)
     {
-        int totalCount = this.ItemTotalCount(itemCode);
-        return totalCount >= numberCheck;
+        return ItemTotalCount(itemCode) >= numberCheck;
     }
 
+    /// <summary>
+    /// Lấy tổng số lượng của một loại item trong inventory.
+    /// </summary>
     public virtual int ItemTotalCount(ItemCode itemCode)
     {
         int totalCount = 0;
-        foreach (ItemInventory itemInventory in this.items)
+        foreach (ItemInventory item in this.items)
         {
-            if (itemInventory.itemProfile.itemCode != itemCode) continue;
-            totalCount += itemInventory.itemCount;
+            if (item.itemProfile.itemCode == itemCode)
+            {
+                totalCount += item.itemCount;
+            }
         }
-
         return totalCount;
     }
 
+    /// <summary>
+    /// Trừ số lượng item trong inventory.
+    /// </summary>
     public virtual void DeductItem(ItemCode itemCode, int deductCount)
     {
-        ItemInventory itemInventory;
-        int deduct;
         for (int i = this.items.Count - 1; i >= 0; i--)
         {
-            if (deductCount <= 0) break;
+            ItemInventory item = this.items[i];
+            if (item.itemProfile.itemCode != itemCode) continue;
 
-            itemInventory = this.items[i];
-            if (itemInventory.itemProfile.itemCode != itemCode) continue;
-
-            if (deductCount > itemInventory.itemCount)
+            if (deductCount > item.itemCount)
             {
-                deduct = itemInventory.itemCount;
-                deductCount -= itemInventory.itemCount;
+                deductCount -= item.itemCount;
+                item.itemCount = 0;
             }
             else
             {
-                deduct = deductCount;
+                item.itemCount -= deductCount;
                 deductCount = 0;
             }
 
-            itemInventory.itemCount -= deduct;
-        }
+            if (item.itemCount <= 0)
+            {
+                this.items.RemoveAt(i); // Loại bỏ item nếu số lượng bằng 0
+            }
 
-        this.ClearEmptySlot();
-    }
-
-    protected virtual void ClearEmptySlot()
-    {
-        ItemInventory itemInventory;
-        for (int i = 0; i < this.items.Count; i++)
-        {
-            itemInventory = this.items[i];
-            if (itemInventory.itemCount == 0) this.items.RemoveAt(i);
+            if (deductCount <= 0) break;
         }
     }
 }

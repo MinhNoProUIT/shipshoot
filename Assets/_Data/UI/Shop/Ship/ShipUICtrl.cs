@@ -8,24 +8,28 @@ using UnityEngine.UI;
 public class ShipUICtrl : BaseMonoBehaviour
 {
     [SerializeField] protected ShipProfileSO shipProfileSO;
-    [SerializeField] protected TextMeshProUGUI hpText;
-    [SerializeField] protected TextMeshProUGUI dmgText;
+    //[SerializeField] protected TextMeshProUGUI hpText;
+    //[SerializeField] protected TextMeshProUGUI dmgText;
     [SerializeField] protected TextMeshProUGUI levelUnlock;
+    [SerializeField] protected TextMeshProUGUI shipName;
     [SerializeField] protected Image imgShip;
     [SerializeField] protected Button btnBuyCoins;
     [SerializeField] protected Button btnBuyDiamonds;
+    [SerializeField] protected Button btnisOwned;
     [SerializeField] protected TextMeshProUGUI btnBuyCoinsText;
     [SerializeField] protected TextMeshProUGUI btnBuyDiamondsText;
     protected override void LoadComponents()
     {
         base.LoadComponents();
-        LoadHpText();
-        LoadDamageText();
+        //LoadHpText();
+        //LoadDamageText();
+        LoadShipName();
         LoadImgShip();
         LoadLevelUnlock();
         LoadBtnBuyCoins();
         LoadBtnBuyDiamonds();
         LoadBtnBuyCoinsText();
+        LoadBtnIsOwned();
         LoadBtnBuyDiamondsText();
         LoadShipSO();
     }
@@ -65,6 +69,14 @@ public class ShipUICtrl : BaseMonoBehaviour
         Debug.Log(transform.name + ": LoadBtnBuyCoins", gameObject);
     }
 
+    protected virtual void LoadBtnIsOwned()
+    {
+        if (this.btnisOwned != null) return;
+        this.btnisOwned = transform.Find("BtnIsOwned").GetComponentInChildren<Button>();
+        Debug.Log(transform.name + ": LoadBtnIsOwned", gameObject);
+    }
+
+
     protected virtual void LoadLevelUnlock()
     {
         if (this.levelUnlock != null) return;
@@ -72,24 +84,18 @@ public class ShipUICtrl : BaseMonoBehaviour
         Debug.Log(transform.name + ": LoadLevelUnlock", gameObject);
     }
 
-    protected virtual void LoadHpText()
+    protected virtual void LoadShipName()
     {
-        if (this.hpText != null) return;
-        this.hpText = transform.Find("Dame_HP").Find("HP").GetComponentInChildren<TextMeshProUGUI>();
+        if (this.shipName != null) return;
+        this.shipName = transform.Find("SpaceshipName").GetComponentInChildren<TextMeshProUGUI>();
         Debug.Log(transform.name + ": LoadHpText", gameObject);
     }
 
-    protected virtual void LoadDamageText()
-    {
-        if (this.dmgText != null) return;
-        this.dmgText = transform.Find("Dame_HP").Find("Damage").GetComponentInChildren<TextMeshProUGUI>();
-        Debug.Log(transform.name + ": LoadInventory", gameObject);
-    }
-
+   
     protected virtual void LoadImgShip()
     {
         if (this.imgShip != null) return;
-        this.imgShip = transform.Find("Image_ship").GetComponent<Image>();
+        this.imgShip = transform.Find("Bgr_Img_ship").Find("Image_ship").GetComponent<Image>();
         Debug.Log(transform.name + ": LoadInventory", gameObject);
     }
 
@@ -103,11 +109,24 @@ public class ShipUICtrl : BaseMonoBehaviour
 
     protected virtual void LoadValue()
     {
-        this.hpText.text = "HP: " + shipProfileSO.hpMax.ToString();
-        this.dmgText.text = "DMG: " + shipProfileSO.dameMax.ToString();
         this.imgShip.sprite = shipProfileSO.sprite;
         this.btnBuyCoinsText.text = shipProfileSO.coins.ToString();
         this.btnBuyDiamondsText.text = shipProfileSO.diamonds.ToString();
-        this.levelUnlock.text = "Cap do mo khoa: " + shipProfileSO.levelUnlock.ToString();
+        this.levelUnlock.text = "Level unlock: " + shipProfileSO.levelUnlock.ToString();
+        this.shipName.text = shipProfileSO.ShipName;
+    }
+
+    public virtual void SetActiveButtons(int isOwned){
+        if(isOwned == 1){
+            btnBuyCoins.gameObject.SetActive(false);
+            btnBuyDiamonds.gameObject.SetActive(false);
+            btnisOwned.gameObject.SetActive(true);
+        }
+        else
+        {
+            btnBuyCoins.gameObject.SetActive(true);
+            btnBuyDiamonds.gameObject.SetActive(true);
+            btnisOwned.gameObject.SetActive(false);
+        }
     }
 }

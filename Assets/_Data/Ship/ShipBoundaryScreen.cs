@@ -29,10 +29,10 @@ public class ShipBoundaryScreen : BaseMonoBehaviour
         topBoundary = InputManager.Instance.TopBoundary;
         bottomBoundary = InputManager.Instance.BottomBoundary;
 
-        leftBoundary += 1;
-        rightBoundary -= 1;
-        topBoundary -= 1;
-        bottomBoundary += 1;
+        leftBoundary += 0.5f;
+        rightBoundary -= 0.5f;
+        topBoundary -= 0.5f;
+        bottomBoundary += 0.5f; 
 
     }
 

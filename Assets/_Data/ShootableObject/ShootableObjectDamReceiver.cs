@@ -31,8 +31,11 @@ public class ShootableObjectDamReceiver : DamageReceiver
     protected virtual void OnDeadDrop()
     {
         Vector3 dropPos = transform.position;
-        Quaternion dropRot = transform.rotation;
-        ItemDropSpawner.Instance.Drop(this.shootablObjectCtrl.ShootableObject.dropList, dropPos, dropRot);
+        //Quaternion dropRot = transform.rotation;
+        ItemDropSpawner.Instance.Drop(this.shootablObjectCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
+        //ItemSpecialSpawner.Instance.Drop(this.shootablObjectCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
+
+        Debug.Log("Da drop");
     }
 
     protected virtual void OnDeadFX()

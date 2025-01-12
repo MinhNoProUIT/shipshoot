@@ -12,6 +12,6 @@ public class ItemDespawn : DespawnByDistance
     protected override void ResetValue()
     {
         base.ResetValue();
-        this.disLimit = 70f;
+        this.disLimit = 20f;
     }
 }
