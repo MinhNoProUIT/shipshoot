@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShipId: 2
   ShipName: Ship2
+  Description: 
   sprite: {fileID: 21300000, guid: 017d6836eda9bfe4c84b0d365abde94a, type: 3}
   dameMax: 15
   hpMax: 60
+  speedMovement: 12
+  speedGun: 12
   levelUnlock: 1
   coins: 120
   diamonds: 12

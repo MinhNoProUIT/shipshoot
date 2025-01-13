@@ -5,7 +5,7 @@ using UnityEngine;
 public class ShootableObjectDamReceiver : DamageReceiver
 {
     [Header("Shootable Object")]
-    [SerializeField] protected ShootableObjectCtrl shootablObjectCtrl;
+    [SerializeField] protected EnemyCtrl enemyCtrl;
 
     protected override void LoadComponents()
     {
@@ -15,8 +15,8 @@ public class ShootableObjectDamReceiver : DamageReceiver
 
     protected virtual void LoadCtrl()
     {
-        if (this.shootablObjectCtrl != null) return;
-        this.shootablObjectCtrl = transform.parent.GetComponent<ShootableObjectCtrl>();
+        if (this.enemyCtrl != null) return;
+        this.enemyCtrl = transform.parent.GetComponent<EnemyCtrl>();
         Debug.LogWarning(transform.name + ": LoadCtrl", gameObject);
     }
 
@@ -24,7 +24,7 @@ public class ShootableObjectDamReceiver : DamageReceiver
     {
         this.OnDeadFX();
         this.OnDeadDrop();
-        this.shootablObjectCtrl.Despawn.DespawnObject();
+        this.enemyCtrl.Despawn.DespawnObject();
 
     }
 
@@ -32,7 +32,8 @@ public class ShootableObjectDamReceiver : DamageReceiver
     {
         Vector3 dropPos = transform.position;
         //Quaternion dropRot = transform.rotation;
-        ItemDropSpawner.Instance.Drop(this.shootablObjectCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
+        ItemDropSpawner.Instance.Drop(this.enemyCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
+        ItemSpecialSpawner.Instance.Drop(this.enemyCtrl.ShootableSpecialObjectSO.itemDropRates, dropPos, Quaternion.identity);
         //ItemSpecialSpawner.Instance.Drop(this.shootablObjectCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
 
         Debug.Log("Da drop");
@@ -52,7 +53,7 @@ public class ShootableObjectDamReceiver : DamageReceiver
 
     public override void Reborn()
     {
-        this.hpMax = this.shootablObjectCtrl.ShootableObject.hpMax;
+        this.hpMax = this.enemyCtrl.ShootableObject.hpMax;
         base.Reborn();
     }
 }

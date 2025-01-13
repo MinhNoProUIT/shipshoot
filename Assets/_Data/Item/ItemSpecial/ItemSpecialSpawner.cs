@@ -16,16 +16,16 @@ public class ItemSpecialSpawner : Spawner
         ItemSpecialSpawner.instance = this;
     }
 
-    public virtual List<ItemDropRate> Drop(List<ItemDropRate> dropList, Vector3 pos, Quaternion rot)
+    public virtual List<ItemSpecialDropRate> Drop(List<ItemSpecialDropRate> dropList, Vector3 pos, Quaternion rot)
     {
-        List<ItemDropRate> dropItems = new List<ItemDropRate>();
+        List<ItemSpecialDropRate> dropItems = new List<ItemSpecialDropRate>();
 
         if (dropList.Count < 1) return dropItems;
 
         dropItems = this.DropItems(dropList);
-        foreach (ItemDropRate itemDropRate in dropItems)
+        foreach (ItemSpecialDropRate itemSpecialDropRate in dropItems)
         {
-            ItemCode itemCode = itemDropRate.itemSO.itemCode;
+            ItemSpecialCode itemCode = itemSpecialDropRate.itemProfile.itemCode;
             Transform itemDrop = this.Spawn(itemCode.ToString(), pos, rot);
             if (itemDrop == null) continue;
             itemDrop.gameObject.SetActive(true);
@@ -35,13 +35,13 @@ public class ItemSpecialSpawner : Spawner
         return dropItems;
     }
 
-    protected virtual List<ItemDropRate> DropItems(List<ItemDropRate> items)
+    protected virtual List<ItemSpecialDropRate> DropItems(List<ItemSpecialDropRate> items)
     {
-        List<ItemDropRate> droppedItems = new List<ItemDropRate>();
+        List<ItemSpecialDropRate> droppedItems = new List<ItemSpecialDropRate>();
 
         float rate, itemRate;
         int itemDropMore;
-        foreach (ItemDropRate item in items)
+        foreach (ItemSpecialDropRate item in items)
         {
             rate = Random.Range(0, 1f);
             itemRate = item.dropRate / 100000f * this.GameDropRate();
@@ -78,14 +78,5 @@ public class ItemSpecialSpawner : Spawner
         return this.gameDropRate + dropRateFromItems;
     }
 
-    public virtual Transform DropFromInventory(ItemInventory itemInventory, Vector3 pos, Quaternion rot)
-    {
-        ItemCode itemCode = itemInventory.itemProfile.itemCode;
-        Transform itemDrop = this.Spawn(itemCode.ToString(), pos, rot);
-        if (itemDrop == null) return null;
-        itemDrop.gameObject.SetActive(true);
-        ItemSpecialCtrl itemSpecialCtrl = itemDrop.GetComponent<ItemSpecialCtrl>();
-        itemSpecialCtrl.SetItemInventory(itemInventory);
-        return itemDrop;
-    }
+    
 }
