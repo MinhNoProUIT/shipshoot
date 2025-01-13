@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,15 @@ public class ShipUICtrl : BaseMonoBehaviour
     [SerializeField] protected Button btnisOwned;
     [SerializeField] protected TextMeshProUGUI btnBuyCoinsText;
     [SerializeField] protected TextMeshProUGUI btnBuyDiamondsText;
+    private SynchronizationContext unityContext;
+
+    protected override void Awake()
+    {
+        base.Awake();
+        unityContext = SynchronizationContext.Current;
+
+    }
+
     protected override void LoadComponents()
     {
         base.LoadComponents();
@@ -59,6 +69,8 @@ public class ShipUICtrl : BaseMonoBehaviour
     {
         if (this.btnBuyDiamonds != null) return;
         this.btnBuyDiamonds = transform.Find("BtnBuy").Find("BtnBuyDiamonds").GetComponentInChildren<Button>();
+       // btnBuyDiamonds.onClick.AddListener(OnBuyDiamondsClicked); // Thêm sự kiện cho nút mua bằng kim cương
+
         Debug.Log(transform.name + ": LoadBtnBuyDiamonds", gameObject);
     }
 
@@ -66,6 +78,7 @@ public class ShipUICtrl : BaseMonoBehaviour
     {
         if (this.btnBuyCoins != null) return;
         this.btnBuyCoins = transform.Find("BtnBuy").Find("BtnBuyCoins").GetComponentInChildren<Button>();
+        
         Debug.Log(transform.name + ": LoadBtnBuyCoins", gameObject);
     }
 
@@ -99,12 +112,90 @@ public class ShipUICtrl : BaseMonoBehaviour
         Debug.Log(transform.name + ": LoadInventory", gameObject);
     }
 
+    private void OnBuyCoinsClicked()
+    {
+        //Debug.Log("So vang hien tai la: "+DatabaseManager.Instance.Golds.Value);
+        if (DatabaseManager.Instance.Golds.Value >= shipProfileSO.coins)
+        {
+            // Cập nhật số vàng
+            DatabaseManager.Instance.Golds.Value -= shipProfileSO.coins;
+            // Cập nhật phi thuyền sở hữu
+            DatabaseManager.Instance.AddSpaceshipToUser(DatabaseManager.Instance.GetUserId(), shipProfileSO.ShipId.ToString(), success =>
+            {
+                if (success)
+                {
+                    Debug.Log("Mua phi thuyền bằng vàng thành công!");
+                    CheckOwnedSpaceshipCurrent();
+                    // Cập nhật UI hoặc thực hiện hành động khác nếu cần
+                }
+            });
+        }
+        else
+        {
+            Debug.Log("Không đủ vàng để mua phi thuyền.");
+        }
+    }
+
+    private void OnBuyDiamondsClicked()
+    {
+        if (DatabaseManager.Instance.Diamonds.Value >= shipProfileSO.diamonds)
+        {
+            // Cập nhật số kim cương
+            DatabaseManager.Instance.Diamonds.Value -= shipProfileSO.diamonds;
+            // Cập nhật phi thuyền sở hữu
+            DatabaseManager.Instance.AddSpaceshipToUser(DatabaseManager.Instance.GetUserId(), shipProfileSO.ShipId.ToString(), success =>
+            {
+                if (success)
+                {
+                    Debug.Log("Mua phi thuyền bằng kim cương thành công!");
+                    CheckOwnedSpaceshipCurrent();
+                    // Cập nhật UI hoặc thực hiện hành động khác nếu cần
+                }
+            });
+        }
+        else
+        {
+            Debug.Log("Không đủ kim cương để mua phi thuyền.");
+        }
+    }
+
     protected override void Start()
     {
         base.Start();
         if (shipProfileSO == null) return;
         Debug.Log("ShipProfileSO not null");
+        AddListenerButton();
+
         LoadValue();
+    }
+
+    protected virtual void AddListenerButton(){
+        AddListenerButtonBuyCoin();
+        AddListenerButtonBuyDiamond();
+    }
+
+    protected virtual void AddListenerButtonBuyCoin(){
+        if (btnBuyCoins == null)
+        {
+            Debug.LogError("btnBuyCoins is null. Cannot add listener.");
+        }
+        else
+        {
+            btnBuyCoins.onClick.AddListener(OnBuyCoinsClicked);
+            Debug.Log("Added OnBuyCoinsClicked listener.");
+        }
+    }
+
+    protected virtual void AddListenerButtonBuyDiamond(){
+        if (btnBuyCoins == null)
+        {
+            Debug.LogError("btnBuyDiamonds is null. Cannot add listener.");
+        }
+        else
+        {
+            btnBuyDiamonds.onClick.AddListener(OnBuyDiamondsClicked);
+            Debug.Log("Added OnBuyDiamondsClicked listener.");
+        }
     }
 
     protected virtual void LoadValue()
@@ -114,6 +205,25 @@ public class ShipUICtrl : BaseMonoBehaviour
         this.btnBuyDiamondsText.text = shipProfileSO.diamonds.ToString();
         this.levelUnlock.text = "Level unlock: " + shipProfileSO.levelUnlock.ToString();
         this.shipName.text = shipProfileSO.ShipName;
+
+        if(DatabaseManager.Instance != null) Debug.Log("Database Manager not null");
+        Debug.Log(PlayerPrefs.GetString("UserId", ""));
+        Debug.Log(transform.name);
+
+        CheckOwnedSpaceshipCurrent();
+    }
+
+    protected virtual void CheckOwnedSpaceshipCurrent(){
+        DatabaseManager.Instance.CheckOwnedSpaceship(PlayerPrefs.GetString("UserId", ""), transform.name, isOwned =>
+        {
+            unityContext.Post(_ =>
+            {
+                //Debug.Log($"Ket qua tra ve isOwned voi ship {transform.name} la isOwned la {isOwned}");
+                SetActiveButtons(isOwned);
+                RefreshUI();
+                Debug.Log("Da cap nhat button");
+            }, null);
+        });
     }
 
     public virtual void SetActiveButtons(int isOwned){
@@ -129,4 +239,12 @@ public class ShipUICtrl : BaseMonoBehaviour
             btnisOwned.gameObject.SetActive(false);
         }
     }
+
+    protected virtual void RefreshUI()
+    {
+        btnBuyCoins.gameObject.SetActive(!btnisOwned.gameObject.activeSelf);
+        btnBuyDiamonds.gameObject.SetActive(!btnisOwned.gameObject.activeSelf);
+        Debug.Log("Giao diện đã được làm mới.");
+    }
+
 }

@@ -23,6 +23,12 @@ public abstract class BaseAuthManager : MonoBehaviour
             {
                 FirebaseApp app = FirebaseApp.DefaultInstance;
                 auth = FirebaseAuth.DefaultInstance;
+                if(auth == null) {
+                    Debug.Log("Auth null");
+                }
+                else {
+                    Debug.Log("Auth not null");
+                }
                 dbReference = FirebaseDatabase.DefaultInstance.RootReference;
                 OnFirebaseInitialized();
             }
