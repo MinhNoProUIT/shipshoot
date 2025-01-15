@@ -16,9 +16,11 @@ public class ShipUICtrl : BaseMonoBehaviour
     [SerializeField] protected Image imgShip;
     [SerializeField] protected Button btnBuyCoins;
     [SerializeField] protected Button btnBuyDiamonds;
+    [SerializeField] protected Button btnInfomation;
     [SerializeField] protected Button btnisOwned;
     [SerializeField] protected TextMeshProUGUI btnBuyCoinsText;
     [SerializeField] protected TextMeshProUGUI btnBuyDiamondsText;
+    [SerializeField] protected ShipShowDetail shipShowDetail;
     private SynchronizationContext unityContext;
 
     protected override void Awake()
@@ -42,6 +44,14 @@ public class ShipUICtrl : BaseMonoBehaviour
         LoadBtnIsOwned();
         LoadBtnBuyDiamondsText();
         LoadShipSO();
+        LoadBtnInfomation();
+        LoadShipShowDetail();
+    }
+
+    protected virtual void LoadShipShowDetail(){
+        if(this.shipShowDetail!=null) return;
+        this.shipShowDetail = GameObject.Find("ShipShowDetail").GetComponent<ShipShowDetail>();
+        Debug.Log(transform.name + ": LoadShipShowDetail", gameObject);
     }
 
     protected virtual void LoadShipSO()
@@ -82,6 +92,15 @@ public class ShipUICtrl : BaseMonoBehaviour
         Debug.Log(transform.name + ": LoadBtnBuyCoins", gameObject);
     }
 
+    protected virtual void LoadBtnInfomation()
+    {
+        if (this.btnInfomation != null) return;
+        this.btnInfomation = transform.Find("BtnInfomation").GetComponentInChildren<Button>();
+       // btnBuyDiamonds.onClick.AddListener(OnBuyDiamondsClicked); // Thêm sự kiện cho nút mua bằng kim cương
+
+        Debug.Log(transform.name + ": LoadBtnInfomation", gameObject);
+    }
+
     protected virtual void LoadBtnIsOwned()
     {
         if (this.btnisOwned != null) return;
@@ -110,6 +129,15 @@ public class ShipUICtrl : BaseMonoBehaviour
         if (this.imgShip != null) return;
         this.imgShip = transform.Find("Bgr_Img_ship").Find("Image_ship").GetComponent<Image>();
         Debug.Log(transform.name + ": LoadInventory", gameObject);
+    }
+
+    private void OnShowInformationShipClicked(){
+        if(this.shipShowDetail == null) return;
+
+        shipShowDetail.SetShipProfileSO(shipProfileSO);
+
+        shipShowDetail.gameObject.SetActive(true);
+
     }
 
     private void OnBuyCoinsClicked()
@@ -172,7 +200,21 @@ public class ShipUICtrl : BaseMonoBehaviour
     protected virtual void AddListenerButton(){
         AddListenerButtonBuyCoin();
         AddListenerButtonBuyDiamond();
+        AddListenerButtonInformationShip();
     }
+
+    protected virtual void AddListenerButtonInformationShip(){
+        if (btnInfomation == null)
+        {
+            Debug.LogError("btnBuyCoins is null. Cannot add listener.");
+        }
+        else
+        {
+            btnInfomation.onClick.AddListener(OnShowInformationShipClicked);
+            Debug.Log("Added OnBuyCoinsClicked listener.");
+        }
+    }
+
 
     protected virtual void AddListenerButtonBuyCoin(){
         if (btnBuyCoins == null)

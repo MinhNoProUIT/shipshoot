@@ -12,13 +12,13 @@ public class ResourceUI : BaseMonoBehaviour
         base.OnEnable();
         if (DatabaseManager.Instance == null)
         {
-            Debug.LogError("DatabaseManager.Instance is null! Ensure it is initialized before accessing.");
+            Debug.LogWarning("DatabaseManager.Instance is null! Ensure it is initialized before accessing.");
             return;
         }
 
         if (DatabaseManager.Instance.Golds == null || DatabaseManager.Instance.Diamonds == null)
         {
-            Debug.LogError("Golds or Diamonds is null! Ensure they are properly initialized.");
+            Debug.LogWarning("Golds or Diamonds is null! Ensure they are properly initialized.");
             return;
         }
         DatabaseManager.Instance.Golds.OnValueChanged += UpdateGoldsUI;

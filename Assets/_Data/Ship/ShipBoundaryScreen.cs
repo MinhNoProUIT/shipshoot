@@ -6,19 +6,83 @@ using UnityEngine;
 public class ShipBoundaryScreen : BaseMonoBehaviour
 {
     [SerializeField] protected Vector3 targetPosition;
-    [SerializeField] protected float speed = 0.01f;
+    [SerializeField] protected float speed = 0.001f;
+    [SerializeField] protected float speedMovement = 0.01f;
+    protected float originalSpeedMovement; // Lưu giá trị tốc độ ban đầu
+    protected Coroutine specialItemCoroutine;
     [SerializeField] protected float distance = 1f;
     [SerializeField] protected float minDistance = 1f;
 
     [Header("Boundary Screen")]
+    [SerializeField] protected ShipCtrl shipCtrl;
+    public ShipCtrl ShipCtrl => shipCtrl;
     [SerializeField] protected float leftBoundary;
     [SerializeField] protected float rightBoundary;
     [SerializeField] protected float topBoundary;
     [SerializeField] protected float bottomBoundary;
+    
     protected override void Start()
     {
         base.Start();
         GetBoundrary();
+        SetSpeedMovement();
+    }
+
+    public virtual void ActivateSpecialItem()
+    {
+        // Nếu đã có hiệu ứng đặc biệt, hủy và áp dụng lại để làm mới thời gian
+        if (specialItemCoroutine != null)
+        {
+            StopCoroutine(specialItemCoroutine);
+        }
+
+        // Lưu tốc độ gốc nếu đây là lần đầu nhặt item
+        if (specialItemCoroutine == null)
+        {
+            originalSpeedMovement = speedMovement; // Chỉ lưu một lần
+        }
+
+        // Reset hiệu ứng đặc biệt
+        specialItemCoroutine = StartCoroutine(SpecialItemEffectCoroutine());
+    }
+
+// Coroutine quản lý hiệu ứng đặc biệt
+    protected IEnumerator SpecialItemEffectCoroutine()
+    {
+        // Đặt tốc độ tăng thêm 10% so với tốc độ gốc
+        speedMovement = originalSpeedMovement * 1.1f;
+        Debug.Log("Speed Movement current: " + speedMovement);
+
+        // Chờ 5 giây
+        yield return new WaitForSeconds(5f);
+
+        // Khôi phục tốc độ ban đầu
+        speedMovement = originalSpeedMovement;
+        Debug.Log("Speed Movement reset to: " + speedMovement);
+
+        // Xóa trạng thái Coroutine
+        specialItemCoroutine = null;
+    }
+
+    protected virtual void SetSpeedMovement(){
+        this.speedMovement = shipCtrl.ShipProfileSO.speedMovement;
+        Debug.Log("Speed Movement current: " + this.speedMovement);
+    }
+
+    protected virtual float GetSpeedMovement(){
+        return this.speedMovement;
+    }
+
+    protected override void LoadComponents()
+    {
+        base.LoadComponents();
+        LoadShipCtrl();
+    }
+
+    protected virtual void LoadShipCtrl(){
+        if (this.shipCtrl != null) return;
+        this.shipCtrl = transform.parent.GetComponent<ShipCtrl>();
+        Debug.LogWarning(transform.name + ": LoadShipCtrl", gameObject);
     }
 
 
@@ -61,7 +125,7 @@ public class ShipBoundaryScreen : BaseMonoBehaviour
         if (this.distance < this.minDistance) return; */
         GetMousePosition();
 
-        Vector3 newPos = Vector3.Lerp(transform.parent.position, targetPosition, this.speed);
+        Vector3 newPos = Vector3.Lerp(transform.parent.position, targetPosition, this.speed * this.speedMovement);
         transform.parent.position = newPos;
     }
 

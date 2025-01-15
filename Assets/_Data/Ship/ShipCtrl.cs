@@ -7,16 +7,16 @@ using UnityEngine.UI;
 public class ShipCtrl : BaseMonoBehaviour
 {
     [Header("Ship")]
-    [SerializeField] protected Transform model;
-    public Transform Model => model;
+    [SerializeField] protected SpriteRenderer model;
+    public SpriteRenderer Model => model;
 
-    [SerializeField] protected ObjShooting objShooting;
-    public ObjShooting ObjShooting => objShooting;
+    [SerializeField] protected ShipShootByMouse objShooting;
+    public ShipShootByMouse ObjShooting => objShooting;
     [SerializeField] protected ShipBoundaryScreen objMove;
     public ShipBoundaryScreen ObjMove => objMove;
 
-    [SerializeField] protected DamageReceiver damageReceiver;
-    public DamageReceiver DamageReceiver => damageReceiver;
+    [SerializeField] protected ShipDamageReceiver damageReceiver;
+    public ShipDamageReceiver DamageReceiver => damageReceiver;
 
     [SerializeField] protected Inventory inventory;
     public Inventory Inventory => inventory;
@@ -30,6 +30,7 @@ public class ShipCtrl : BaseMonoBehaviour
     //    if (slider == null) return;
     //    slider.transform.rotation = Quaternion.Euler(0, 0, 0);
     //}
+    
     protected override void LoadComponents()
     {
         this.LoadModel();
@@ -52,21 +53,21 @@ public class ShipCtrl : BaseMonoBehaviour
     protected virtual void LoadObjShooting()
     {
         if (this.objShooting != null) return;
-        this.objShooting = GetComponentInChildren<ObjShooting>();
+        this.objShooting = GetComponentInChildren<ShipShootByMouse>();
         Debug.LogWarning(transform.name + ": LoadObjShooting", gameObject);
     }
 
     protected virtual void LoadModel()
     {
         if (this.model != null) return;
-        this.model = transform.Find("Model");
+        this.model = transform.Find("Model").GetComponent<SpriteRenderer>();
         Debug.LogWarning(transform.name + ": LoadModel", gameObject);
     }
 
      protected virtual void LoadDameReceiver()
     {
         if (this.damageReceiver != null) return;
-        this.damageReceiver = transform.GetComponentInChildren<DamageReceiver>();
+        this.damageReceiver = transform.GetComponentInChildren<ShipDamageReceiver>();
         Debug.LogWarning(transform.name + ": LoadDameReceiver", gameObject);
     }
 
@@ -83,5 +84,23 @@ public class ShipCtrl : BaseMonoBehaviour
         if (this.inventory != null) return;
         this.inventory = transform.GetComponentInChildren<Inventory>();
         Debug.Log(transform.name + ": LoadInventory", gameObject);
+    }
+
+    protected override void Awake()
+    {
+        base.Awake();
+        LoadShipProfile();
+    }
+
+    protected virtual void LoadShipProfile(){
+        string resPath = "Ship/SH010";
+        this.shipProfileSO = Resources.Load<ShipProfileSO>(resPath);
+        Debug.LogWarning(transform.name + ": LoadSpecialSO " + resPath, gameObject);
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        this.model.sprite = shipProfileSO.sprite;
     }
 }

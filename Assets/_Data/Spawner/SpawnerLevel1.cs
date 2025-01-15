@@ -35,7 +35,7 @@ public class ObjectSpawner : MonoBehaviour
                 //spawnPosition.y >= spawnAreaCenter.y - spawnAreaSize.y/2 && spawnPosition.y <= spawnAreaCenter.y + spawnAreaSize.y/2 )
                 //{
                     // Khởi tạo đối tượng
-                    Instantiate(objectToSpawn, spawnPosition, Quaternion.identity);
+                    EnemySpawner.Instance.Spawn("Enemy_1", spawnPosition, Quaternion.identity);
                 //}
             }
         }

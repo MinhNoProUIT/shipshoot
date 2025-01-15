@@ -17,3 +17,9 @@ MonoBehaviour:
     dropRate: 50000
   - itemProfile: {fileID: 11400000, guid: d3b02e66c2d40c1408729c67d164c8a2, type: 2}
     dropRate: 50000
+  - itemProfile: {fileID: 11400000, guid: 9657081776d45c8488e5b9aa8f2c8bb7, type: 2}
+    dropRate: 50000
+  - itemProfile: {fileID: 11400000, guid: 70cb1b5718afa7c48bcfd3bc5fc1bbd0, type: 2}
+    dropRate: 50000
+  - itemProfile: {fileID: 11400000, guid: cefdd29eb7c8d5c40bc685560912bb95, type: 2}
+    dropRate: 50000

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemCode: 5
   itemName: MultiBullet
-  image: {fileID: 0}
+  image: {fileID: 1891936138, guid: 6cfe9ba872e0aea458960d8e00b7f282, type: 3}
   time: 5

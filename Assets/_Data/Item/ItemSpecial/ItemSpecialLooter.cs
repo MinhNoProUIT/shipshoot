@@ -9,11 +9,22 @@ public class ItemSpecialLooter : BaseMonoBehaviour
     [SerializeField] protected SphereCollider _collider;
     [SerializeField] protected Rigidbody _rigidbody;
 
+    [SerializeField] protected ShipCtrl shipCtrl;
+    public ShipCtrl ShipCtrl => shipCtrl;
+
     protected override void LoadComponents()
     {
         base.LoadComponents();
         this.LoadTrigger();
         this.LoadRigidbody();
+        LoadShipCtrl();
+
+    }
+
+    protected virtual void LoadShipCtrl(){
+        if (this.shipCtrl != null) return;
+        this.shipCtrl = transform.parent.GetComponent<ShipCtrl>();
+        Debug.LogWarning(transform.name + ": LoadShipCtrl", gameObject);
     }
 
     protected virtual void LoadTrigger()
@@ -41,5 +52,11 @@ public class ItemSpecialLooter : BaseMonoBehaviour
         if (itemSpecialPickupable == null) return;
 
         itemSpecialPickupable.Picked();
+        Debug.Log(transform.name + ": " +  itemSpecialPickupable.transform.parent.name);
+        if(itemSpecialPickupable.transform.parent.name == "IncreaseMovementSpeed") shipCtrl.ObjMove.ActivateSpecialItem();
+        if(itemSpecialPickupable.transform.parent.name == "IncreaseFireRate") shipCtrl.ObjShooting.ActivateSpecialItem();
+        if(itemSpecialPickupable.transform.parent.name == "MultiBullet") shipCtrl.ObjShooting.ActivateMultiBullet();
+        if(itemSpecialPickupable.transform.parent.name == "Heal") shipCtrl.DamageReceiver.Heal(0.25f);
+        
     }
 }

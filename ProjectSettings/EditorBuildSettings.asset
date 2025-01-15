@@ -23,4 +23,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Shopping Test.unity
     guid: e580da028a57e9d4f803384f6d83e7a9
+  - enabled: 1
+    path: Assets/Scenes/Choose Menu.unity
+    guid: de2705dffd0ae8441be68d91be5a3d62
+  - enabled: 1
+    path: Assets/Scenes/ScoreScene.unity
+    guid: a939b061dda74c04abc50023567f514e
   m_configObjects: {}

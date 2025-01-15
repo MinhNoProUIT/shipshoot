@@ -8,20 +8,24 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     public SpawnerCtrl SpawnerCtrl => spawnerCtrl;
     private static LevelByKillEnemy instance;
     public static LevelByKillEnemy Instance => instance;
-    protected override void Awake()
-    {
-        base.Awake();
-        if (LevelByKillEnemy.instance != null) Debug.LogError("Only 1 LevelByKillEnemy allow to exist");
-        LevelByKillEnemy.instance = this;
-    }
-    
 
     [SerializeField] protected LevelSO[] levelSO;
     [SerializeField] protected int levelCurrent = 1;
     public int LevelCurrent => levelCurrent;
-    [SerializeField] protected int killCount = 0;
-    public int KillCount => killCount;
     [SerializeField] protected int enemiesKilled = 0;
+
+    [Header("UI")]
+    public GameObject levelUpUI;  // UI hiển thị khi lên level
+    public GameObject bossUI;
+    
+    [SerializeField]public GameObject Countdowntime;    // UI hiển thị khi đến boss level
+
+    protected override void Awake()
+    {
+        base.Awake();
+        if (LevelByKillEnemy.instance != null) Debug.LogError("Only 1 LevelByKillEnemy allowed to exist");
+        LevelByKillEnemy.instance = this;
+    }
 
     protected override void Start()
     {
@@ -45,7 +49,7 @@ public class LevelByKillEnemy : BaseMonoBehaviour
 
     protected virtual void LoadLevelSO()
     {
-        if(this.levelSO.Length > 0) return;
+        if (this.levelSO.Length > 0) return;
         string sceneName = SceneManager.GetActiveScene().name;
         string resPath = "LevelSO/" + sceneName;
         this.levelSO = Resources.LoadAll<LevelSO>(resPath);
@@ -55,14 +59,17 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     protected virtual void SetBaseLevel()
     {
         this.levelCurrent = this.levelSO[0].level;
-        this.killCount = this.levelSO[0].killPerLevel;
-        this.spawnerCtrl.SpawnerRandom.SetRandomLimit(this.killCount);
+        this.spawnerCtrl.SpawnerRandom.SetRandomLimit(this.levelSO[0].killPerLevel);
     }
 
     public void EnemyKilled()
     {
         this.enemiesKilled++;
-        if(this.enemiesKilled >= this.levelSO[this.levelCurrent - 1].killPerLevel)
+        if(levelCurrent > 4) {
+            LevelUp();
+            return;
+        }
+        if (this.enemiesKilled >= this.levelSO[this.levelCurrent - 1].killPerLevel)
         {
             this.LevelUp();
             this.enemiesKilled = 0;
@@ -72,46 +79,78 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     protected virtual void LevelUp()
     {
         this.levelCurrent++;
-        if(this.levelCurrent <= this.levelSO.Length){
-            this.killCount = this.levelSO[this.levelCurrent - 1].killPerLevel;
-            this.spawnerCtrl.SpawnerRandom.SetRandomLimit(this.killCount);
-        }
-        Debug.Log("Level Up: " + this.levelCurrent);
 
-        if(this.levelCurrent > this.levelSO.Length)
+        // Kiểm tra nếu đã vượt quá số level trong LevelSO
+        if (this.levelCurrent > this.levelSO.Length)
         {
-            this.levelCurrent = this.levelSO.Length;
-            Debug.Log("Max Level");
+            int countdownTime = FindObjectOfType<CountdownTimer>()?.countdownTime ?? 0;
+
+            PlayerPrefs.SetInt("CountdownTime", countdownTime);
+
+            Inventory inventory = FindObjectOfType<Inventory>();
+            if (inventory != null)
+            {
+                foreach (var item in inventory.Items)
+                {
+                    string itemKey = item.itemProfile.itemCode.ToString();
+                    PlayerPrefs.SetInt(itemKey, item.itemCount);
+                    Debug.Log(itemKey + ":" + item.itemCount);
+                }
+            }
+            PlayerPrefs.Save();
+            SceneManager.LoadScene("ScoreScene");
+            Debug.Log("Reached Boss Level!");
+            this.ShowBossUI();
+            return;
+        }
+
+        // Cập nhật số enemy cần giết cho level tiếp theo
+        this.spawnerCtrl.SpawnerRandom.SetRandomLimit(this.levelSO[this.levelCurrent - 1].killPerLevel);
+
+        // Hiển thị UI lên level
+        this.ShowLevelUpUI();
+
+        Debug.Log("Level Up: " + this.levelCurrent);
+    }
+
+    protected virtual void ShowLevelUpUI()
+    {
+        if (levelUpUI != null)
+        {
+            levelUpUI.SetActive(true);
+            Invoke(nameof(HideLevelUpUI), 3f); // Hiển thị UI trong 2 giây
         }
     }
 
-    /* [SerializeField] protected int killCount = 0;
-    [SerializeField] protected int killPerLevel = 10;
-    public int KillCount => killCount;
-
-    protected virtual void FixedUpdate()
+    protected virtual void HideLevelUpUI()
     {
-        this.Leveling();
+        if (levelUpUI != null)
+        {
+            levelUpUI.SetActive(false);
+        }
     }
 
-    protected virtual void Leveling()
+
+    protected virtual void ShowBossUI()
     {
-        this.killCount = EnemySpawner.Instance.SpawnedCount;
-        int newLevel = this.GetLevelByKill();
-        this.LevelSet(newLevel);
+        if (bossUI != null)
+        {
+            bossUI.SetActive(true);
+            Invoke(nameof(SpawnBoss), 2f); // Hiển thị UI trước khi spawn boss
+        }
     }
 
-    protected virtual int GetLevelByKill()
+    protected virtual void SpawnBoss()
     {
-        return Mathf.FloorToInt(this.killCount / this.killPerLevel) + 1;
+        Debug.Log("Spawning Boss...");
+
+        // Thực hiện logic spawn boss tại đây
+        Transform bossPrefab = this.spawnerCtrl.Spawner.GetPrefabByName("Boss");
+        if (bossPrefab != null)
+        {
+            this.spawnerCtrl.Spawner.Spawn(bossPrefab, Vector3.zero, Quaternion.identity);
+        }
+
+        bossUI.SetActive(false); // Ẩn UI sau khi boss xuất hiện
     }
-
-    public virtual void SetKillPerLevel(int killPerLevel)
-    {
-        this.killPerLevel = killPerLevel;
-    } */
-
-
-
-
 }
