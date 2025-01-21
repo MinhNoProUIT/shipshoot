@@ -6,13 +6,14 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Database;
 
-public abstract class BaseAuthManager : MonoBehaviour
+public abstract class BaseAuthManager : BaseMonoBehaviour
 {
     protected FirebaseAuth auth;
     protected DatabaseReference dbReference;
 
-    protected virtual void Start()
+    protected override void Start()
     {
+        base.Start();
         InitializeFirebase();
     }
 

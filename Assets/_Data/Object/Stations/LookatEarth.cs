@@ -24,7 +24,7 @@ public class LookatEarth : ObjLookAtTarget
     protected override void Start()
     {
         base.Start();
-        this.rotSpeed = 1.3f;
+        this.rotSpeed = 1.4f;
     }
 
     protected virtual void LoadPlayer()

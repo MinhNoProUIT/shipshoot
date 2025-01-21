@@ -49,4 +49,9 @@ public class CountdownTimer : MonoBehaviour
         Debug.Log("Countdown ended!");
         // Thêm logic xử lý khi hết giờ (hiển thị UI, chuyển màn hình, v.v.)
     }
+
+    public void GetCountdownTimerCurrent(){
+        PlayerPrefs.SetInt("CountdownTime", this.currentTime);
+        PlayerPrefs.Save();
+    }
 }

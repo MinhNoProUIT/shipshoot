@@ -33,8 +33,10 @@ public class ShootableObjectDamReceiver : DamageReceiver
     {
         Vector3 dropPos = transform.position;
         //Quaternion dropRot = transform.rotation;
-        ItemDropSpawner.Instance.Drop(this.enemyCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
-        ItemSpecialSpawner.Instance.Drop(this.enemyCtrl.ShootableSpecialObjectSO.itemDropRates, dropPos + new Vector3(0,-1,0), Quaternion.identity);
+        ItemDropSpawner.Instance.Drop(this.enemyCtrl.EnemySO.listItem.itemDropRates, dropPos, Quaternion.identity);
+        ItemSpecialSpawner.Instance.Drop(this.enemyCtrl.EnemySO.listItemSpecial.itemDropRates, dropPos, Quaternion.identity);
+
+        //ItemSpecialSpawner.Instance.Drop(this.enemyCtrl.ShootableSpecialObjectSO.itemDropRates, dropPos + new Vector3(0,-1,0), Quaternion.identity);
         //ItemSpecialSpawner.Instance.Drop(this.shootablObjectCtrl.ShootableObject.dropList, dropPos, Quaternion.identity);
 
         Debug.Log("Da drop");
@@ -54,7 +56,7 @@ public class ShootableObjectDamReceiver : DamageReceiver
 
     public override void Reborn()
     {
-        this.hpMax = this.enemyCtrl.ShootableObject.hpMax;
+        this.hpMax = this.enemyCtrl.EnemySO.HP;
         base.Reborn();
     }
 }

@@ -7,6 +7,7 @@ public class ShipShootByMouse : ObjShooting
     [SerializeField] private float[] shootAngles = { 0f, -15f, 15f };
 
     [SerializeField] protected float speedGun = 0.01f;
+    public float SpeedGun => speedGun;
     protected float originalSpeedGun; // Lưu giá trị tốc độ ban đầu
     protected Coroutine specialItemCoroutine;
 
@@ -130,7 +131,7 @@ public class ShipShootByMouse : ObjShooting
             foreach (float angle in shootAngles)
             {
                 Quaternion bulletRotation = baseRotation * Quaternion.Euler(0, 0, angle); // Tạo góc quay mới
-                Transform newBullet = BulletSpawner.Instance.Spawn(BulletSpawner.bulletOne, spawnPos, bulletRotation);
+                Transform newBullet = BulletSpawner.Instance.Spawn(BulletSpawner.bulletBlue, spawnPos, bulletRotation);
                 if (newBullet == null) continue;
 
                 newBullet.gameObject.SetActive(true);
@@ -141,7 +142,7 @@ public class ShipShootByMouse : ObjShooting
         else
         {
             // Bắn 1 tia bình thường
-            Transform newBullet = BulletSpawner.Instance.Spawn(BulletSpawner.bulletOne, spawnPos, baseRotation);
+            Transform newBullet = BulletSpawner.Instance.Spawn(BulletSpawner.bulletBlue, spawnPos, baseRotation);
             if (newBullet == null) return;
 
             newBullet.gameObject.SetActive(true);

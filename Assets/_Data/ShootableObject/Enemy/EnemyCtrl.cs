@@ -7,8 +7,8 @@ public class EnemyCtrl : AbilityObjectCtrl
         return ObjectType.Enemy.ToString();
     }
 
-    [Header("Enemy")]
-    [SerializeField] protected ShootableSpecialObjectSO shootableSpecialObjectSO;
+    //[Header("Enemy")]
+    /* [SerializeField] protected ShootableSpecialObjectSO shootableSpecialObjectSO;
     public ShootableSpecialObjectSO ShootableSpecialObjectSO => shootableSpecialObjectSO;
 
 
@@ -24,5 +24,5 @@ public class EnemyCtrl : AbilityObjectCtrl
         string resPath = "ShootableSpecialObject/ShootableSpecialObjectSO";
         this.shootableSpecialObjectSO = Resources.Load<ShootableSpecialObjectSO>(resPath);
         Debug.LogWarning(transform.name + ": LoadSpecialSO " + resPath, gameObject);
-    }
+    } */
 }

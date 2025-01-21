@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: SH005
   m_EditorClassIdentifier: 
   ShipId: 5
-  ShipName: Ship3
-  Description: 
+  ShipName: Starburst XVI
+  Description: 'A light-class combat ship with powerful attack capabilities and exceptional
+    evasive maneuvers.  '
   sprite: {fileID: 21300000, guid: 50fe8505467c91048a1cf6c1bf87a119, type: 3}
   dameMax: 20
   hpMax: 100

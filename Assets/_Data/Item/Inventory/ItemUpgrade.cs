@@ -21,7 +21,7 @@ public class ItemUpgrade : InventoryAbstract
 
     public virtual bool UpgradeItem(int itemIndex)
     {
-        if (itemIndex >= this.inventory.Items.Count) return false;
+        /* if (itemIndex >= this.inventory.Items.Count) return false;
 
         ItemInventory itemInventory = this.inventory.Items[itemIndex];
         if (itemInventory.itemCount < 1) return false;
@@ -31,7 +31,7 @@ public class ItemUpgrade : InventoryAbstract
         if (!this.HaveEnoughIngredients(upgradeLevels, itemInventory.upgradeLevel)) return false;
 
         this.DeductIngredients(upgradeLevels, itemInventory.upgradeLevel);
-        itemInventory.upgradeLevel++;
+        itemInventory.upgradeLevel++; */
 
         return true;
     }

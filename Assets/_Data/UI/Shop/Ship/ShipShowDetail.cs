@@ -45,7 +45,7 @@ public class ShipShowDetail : BaseMonoBehaviour
         //sequence.Append(transform.DOScale(new Vector3(1f, 1f, 1f), 0.1f).SetEase(Ease.OutQuad));
 
         // Bước 2: Giảm scale từ (1.2, 1.2, 1.2) về (0, 0, 0) trong 2 giây
-        sequence.Append(background.transform.DOScale(Vector3.zero, 1.5f).SetEase(Ease.InBack));
+        sequence.Append(background.transform.DOScale(Vector3.zero, 1f).SetEase(Ease.InBack));
 
         // Bước 3: Tắt GameObject sau khi hoàn tất
         sequence.OnComplete(() => gameObject.SetActive(false));
@@ -140,7 +140,7 @@ public class ShipShowDetail : BaseMonoBehaviour
     protected virtual void EffectDotween(){
         background.transform.localScale = Vector3.zero;
 
-        background.transform.DOScale(Vector3.one, 1.5f).SetEase(Ease.OutBack);
+        background.transform.DOScale(Vector3.one, 1f).SetEase(Ease.OutBack);
     }
 
     protected virtual void SetInformationShip(){

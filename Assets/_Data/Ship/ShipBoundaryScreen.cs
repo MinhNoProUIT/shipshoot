@@ -8,6 +8,7 @@ public class ShipBoundaryScreen : BaseMonoBehaviour
     [SerializeField] protected Vector3 targetPosition;
     [SerializeField] protected float speed = 0.001f;
     [SerializeField] protected float speedMovement = 0.01f;
+    public float SpeedMovement => speedMovement;
     protected float originalSpeedMovement; // Lưu giá trị tốc độ ban đầu
     protected Coroutine specialItemCoroutine;
     [SerializeField] protected float distance = 1f;

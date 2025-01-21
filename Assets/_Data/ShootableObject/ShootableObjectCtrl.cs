@@ -11,8 +11,10 @@ public abstract class ShootableObjectCtrl : BaseMonoBehaviour
     [SerializeField] protected Despawn despawn;
     public Despawn Despawn => despawn;
 
-    [SerializeField] protected ShootableObjectSO shootableObject;
-    public ShootableObjectSO ShootableObject => shootableObject;
+    /* [SerializeField] protected ShootableObjectSO shootableObject;
+    public ShootableObjectSO ShootableObject => shootableObject; */
+    [SerializeField] protected EnemySO enemySO;
+    public EnemySO EnemySO => enemySO;
 
     [SerializeField] protected ObjShooting objShooting;
     public ObjShooting ObjShooting => objShooting;
@@ -93,10 +95,10 @@ public abstract class ShootableObjectCtrl : BaseMonoBehaviour
 
     protected virtual void LoadSO()
     {
-        if (this.shootableObject != null) return;
+        /* if (this.shootableObject != null) return;
         string resPath = "ShootableObject/" + this.GetObjectTypeString() + "/" + transform.name;
         this.shootableObject = Resources.Load<ShootableObjectSO>(resPath);
-        Debug.LogWarning(transform.name + ": LoadJunkSO " + resPath, gameObject);
+        Debug.LogWarning(transform.name + ": LoadJunkSO " + resPath, gameObject); */
     }
 
     protected abstract string GetObjectTypeString();

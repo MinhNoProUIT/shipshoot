@@ -8,6 +8,8 @@ public class BulletSpawner : Spawner
     public static BulletSpawner Instance => instance;
 
     public static string bulletOne = "Bullet_1";
+    public static string bulletBlue = "Bullet_Blue";
+    public static string bulletGreen = "Bullet_Green";
 
     protected override void Awake()
     {

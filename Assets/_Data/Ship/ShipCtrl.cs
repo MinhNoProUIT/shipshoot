@@ -93,7 +93,9 @@ public class ShipCtrl : BaseMonoBehaviour
     }
 
     protected virtual void LoadShipProfile(){
-        string resPath = "Ship/SH010";
+        //Con code tiep
+        string shipname = PlayerPrefs.GetString("SHIPNAME", "SH001");
+        string resPath = "Ship/" + shipname;
         this.shipProfileSO = Resources.Load<ShipProfileSO>(resPath);
         Debug.LogWarning(transform.name + ": LoadSpecialSO " + resPath, gameObject);
     }
@@ -101,6 +103,23 @@ public class ShipCtrl : BaseMonoBehaviour
     protected override void Start()
     {
         base.Start();
+        if(shipProfileSO==null) return;
         this.model.sprite = shipProfileSO.sprite;
+        CreateHPBar();
+    }
+
+    public virtual void CreateHPBar(){
+        //S shootableObject = newEnemy.GetComponent<ShootableObjectCtrl>();
+        //if (shootableObject == null) return;
+        
+        Transform newHPBar = HPBarSpawner.Instance.Spawn(HPBarSpawner.HPBar, transform.position, Quaternion.identity);
+
+        HPBar HPBar = newHPBar.GetComponent<HPBar>();
+        if (HPBar == null) return;
+
+        HPBar.SetShipCtrl(this);
+        HPBar.SetFollowTarget(this.transform);
+
+        newHPBar.gameObject.SetActive(true);
     }
 }

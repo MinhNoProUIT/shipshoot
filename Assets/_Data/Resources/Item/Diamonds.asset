@@ -13,7 +13,5 @@ MonoBehaviour:
   m_Name: Diamonds
   m_EditorClassIdentifier: 
   itemCode: 2
-  itemType: 1
   itemName: Diamonds
-  defaultMaxStack: 7
-  upgradeLevels: []
+  image: {fileID: 21300000, guid: d8986f348b5c92a49bf32ec68d1a6275, type: 3}

@@ -10,6 +10,7 @@ using UnityEngine.SceneManagement;
 using System.Threading;
 using System;
 using Firebase.Database;
+using DG.Tweening;
 
 public class EmailLoginManager : BaseAuthManager
 {
@@ -19,9 +20,34 @@ public class EmailLoginManager : BaseAuthManager
     [SerializeField] private TextMeshProUGUI forgotPasswordText;
     [SerializeField] private TextMeshProUGUI registerText;
     [SerializeField] protected Transform registerManager;
+    [SerializeField] protected Transform resetPasswordManager;
+    [SerializeField] protected Transform loginSuccessful;
+    [SerializeField] protected Transform loginFailed;
     //[SerializeField] GameObject firebaseManager;
     private SynchronizationContext mainThreadContext;
     //[SerializeField] GameObject databaseManager;
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        AppearanceEffect();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        CloseEffect();
+    }
+
+    protected virtual void AppearanceEffect(){
+        transform.localScale = Vector3.zero; // Đặt scale ban đầu là 0,0,0
+        transform.DOScale(new Vector3(6,9,1), 0.5f).SetEase(Ease.OutBack);
+    }
+
+    protected virtual void CloseEffect()
+    {
+        transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack); // Scale xuống 0,0,0 trong 0.5s
+    }
 
     protected override void Start()
     {
@@ -66,19 +92,29 @@ public class EmailLoginManager : BaseAuthManager
         auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
             if (task.IsFaulted)
             {
+                
+
                 FirebaseException firebaseEx = task.Exception?.GetBaseException() as FirebaseException;
                 AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+                mainThreadContext.Post(_=>{
+                    loginFailed.gameObject.SetActive(true);
+                        gameObject.SetActive(false);
+                },null);
 
                 switch (errorCode)
                 {
                     case AuthError.WrongPassword:
                         Debug.LogWarning("Sai mật khẩu!");
+                        
                         break;
                     case AuthError.UserNotFound:
                         Debug.LogWarning("Tài khoản không tồn tại!");
+                        
                         break;
                     default:
                         Debug.LogWarning($"Đăng nhập thất bại: {firebaseEx.Message}");
+                        
                         ClearInputFields();
                         break;
                 }
@@ -101,7 +137,7 @@ public class EmailLoginManager : BaseAuthManager
                 //DatabaseManager.Instance.SetUserId(userId);
 
                 // Kiểm tra xem dữ liệu người dùng đã tồn tại chưa
-                CheckIfUserDataExists(exists =>
+                CheckIfUserDataExists(userId, exists =>
                 {
                     if (exists)
                     {
@@ -134,8 +170,11 @@ public class EmailLoginManager : BaseAuthManager
                 {
                     PlayerPrefs.SetString("UserId", userId);
                     PlayerPrefs.Save();
+
+                    loginSuccessful.gameObject.SetActive(true);
+                    gameObject.SetActive(false);
                     //PlayfabManager.Instance.LoginToPlayFab(user.UserId);
-                    SceneManager.LoadScene("MainScene");
+                    //SceneManager.LoadScene("MainScene");
                 }, null);
                 //PlayfabManager.Instance.LoginToPlayFab(task.Result.User.UserId);
                 //mainThreadContext.Post(_ =>
@@ -166,11 +205,11 @@ public class EmailLoginManager : BaseAuthManager
 
 
 
-    public void CheckIfUserDataExists(Action<bool> callback)
+    public void CheckIfUserDataExists(string userId, Action<bool> callback)
     {
-       // DatabaseReference userRef = dbReference.Child("users").Child(userId);
+        DatabaseReference userRef = dbReference.Child("users").Child(userId);
 
-        dbReference.GetValueAsync().ContinueWith(task =>
+        userRef.GetValueAsync().ContinueWith(task =>
         {
             if (task.IsFaulted)
             {
@@ -180,15 +219,15 @@ public class EmailLoginManager : BaseAuthManager
             else if (task.IsCompleted)
             {
                 DataSnapshot snapshot = task.Result;
-                callback?.Invoke(snapshot.Exists); // Trả về true nếu dữ liệu tồn tại, ngược lại false
-                Debug.LogWarning($"Thành công: {task.Exception}");
-
+                callback?.Invoke(snapshot.Exists); // Chỉ kiểm tra dữ liệu của userId
             }
         });
     }
 
+
     public void Initialize(string userId)
     {
+        Debug.LogWarning("Initialize" + userId);
         LoadResources(userId);
     }
 
@@ -256,21 +295,9 @@ public class EmailLoginManager : BaseAuthManager
 
     private void OnForgotPasswordClicked()
     {
-        string email = emailInput.text;
-        if (string.IsNullOrEmpty(email))
-        {
-            Debug.LogWarning("Vui lòng nhập email!");
-            return;
-        }
-
-        auth.SendPasswordResetEmailAsync(email).ContinueWith(task => {
-            if (task.IsFaulted)
-            {
-                Debug.LogError("Gửi email khôi phục thất bại: " + task.Exception);
-                return;
-            }
-            Debug.Log("Đã gửi email khôi phục mật khẩu!");
-        });
+        Debug.Log("Chuyển sang màn hình thay đổi mật khẩu");
+        resetPasswordManager.gameObject.SetActive(true);
+        gameObject.SetActive(false);
     }
 
     private void OnRegisterClicked()

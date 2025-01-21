@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: SH001
   m_EditorClassIdentifier: 
   ShipId: 1
-  ShipName: Ship1
-  Description: 
+  ShipName: Starlance V
+  Description: 'A small, agile warship designed for high-speed penetration into enemy
+    territories.  '
   sprite: {fileID: 21300000, guid: 9ae6fe687bdb42e408a70374d506f34f, type: 3}
   dameMax: 10
   hpMax: 50

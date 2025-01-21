@@ -38,9 +38,17 @@ public class BulletCtrl : BaseMonoBehaviour
     public virtual void SetShotter(Transform shooter)
     {
         this.shooter = shooter;
+        Debug.LogWarning(shooter.transform.name);
         if(shooter.transform.name == "Ship")
         {
             this.damageSender.SetDamage(shooter.GetComponent<ShipCtrl>().ShipProfileSO.dameMax);
+        }
+        else if(shooter.transform.name == "Boss") {
+            this.damageSender.SetDamage(shooter.GetComponent<BossCtrl>().BossSO.damage);
+
+        }
+        else{
+            this.damageSender.SetDamage(shooter.GetComponent<EnemyCtrl>().EnemySO.damage);
         }
     }
 

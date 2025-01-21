@@ -21,6 +21,7 @@ public class ShipUICtrl : BaseMonoBehaviour
     [SerializeField] protected TextMeshProUGUI btnBuyCoinsText;
     [SerializeField] protected TextMeshProUGUI btnBuyDiamondsText;
     [SerializeField] protected ShipShowDetail shipShowDetail;
+    [SerializeField] protected NotificationBuy notificationBuy;
     private SynchronizationContext unityContext;
 
     protected override void Awake()
@@ -46,6 +47,13 @@ public class ShipUICtrl : BaseMonoBehaviour
         LoadShipSO();
         LoadBtnInfomation();
         LoadShipShowDetail();
+        LoadNotificationBuy();
+    }
+
+    protected virtual void LoadNotificationBuy(){
+        if(this.notificationBuy!=null) return;
+        this.notificationBuy = GameObject.Find("Notification_Buy").GetComponent<NotificationBuy>();
+        Debug.Log(transform.name + ": LoadNotificationBuy", gameObject);
     }
 
     protected virtual void LoadShipShowDetail(){
@@ -142,49 +150,27 @@ public class ShipUICtrl : BaseMonoBehaviour
 
     private void OnBuyCoinsClicked()
     {
+        if(this.notificationBuy == null ) return;
+
+        this.notificationBuy.SetBuyMoney(0);
+
+        this.notificationBuy.SetShipProfileSO(shipProfileSO);
+
+        notificationBuy.gameObject.SetActive(true);
+
         //Debug.Log("So vang hien tai la: "+DatabaseManager.Instance.Golds.Value);
-        if (DatabaseManager.Instance.Golds.Value >= shipProfileSO.coins)
-        {
-            // Cập nhật số vàng
-            DatabaseManager.Instance.Golds.Value -= shipProfileSO.coins;
-            // Cập nhật phi thuyền sở hữu
-            DatabaseManager.Instance.AddSpaceshipToUser(DatabaseManager.Instance.GetUserId(), shipProfileSO.ShipId.ToString(), success =>
-            {
-                if (success)
-                {
-                    Debug.Log("Mua phi thuyền bằng vàng thành công!");
-                    CheckOwnedSpaceshipCurrent();
-                    // Cập nhật UI hoặc thực hiện hành động khác nếu cần
-                }
-            });
-        }
-        else
-        {
-            Debug.Log("Không đủ vàng để mua phi thuyền.");
-        }
+        
     }
 
     private void OnBuyDiamondsClicked()
     {
-        if (DatabaseManager.Instance.Diamonds.Value >= shipProfileSO.diamonds)
-        {
-            // Cập nhật số kim cương
-            DatabaseManager.Instance.Diamonds.Value -= shipProfileSO.diamonds;
-            // Cập nhật phi thuyền sở hữu
-            DatabaseManager.Instance.AddSpaceshipToUser(DatabaseManager.Instance.GetUserId(), shipProfileSO.ShipId.ToString(), success =>
-            {
-                if (success)
-                {
-                    Debug.Log("Mua phi thuyền bằng kim cương thành công!");
-                    CheckOwnedSpaceshipCurrent();
-                    // Cập nhật UI hoặc thực hiện hành động khác nếu cần
-                }
-            });
-        }
-        else
-        {
-            Debug.Log("Không đủ kim cương để mua phi thuyền.");
-        }
+        if(this.notificationBuy == null ) return;
+
+        this.notificationBuy.SetBuyMoney(1);
+
+        this.notificationBuy.SetShipProfileSO(shipProfileSO);
+
+        notificationBuy.gameObject.SetActive(true);
     }
 
     protected override void Start()
@@ -255,7 +241,7 @@ public class ShipUICtrl : BaseMonoBehaviour
         CheckOwnedSpaceshipCurrent();
     }
 
-    protected virtual void CheckOwnedSpaceshipCurrent(){
+    public virtual void CheckOwnedSpaceshipCurrent(){
         DatabaseManager.Instance.CheckOwnedSpaceship(PlayerPrefs.GetString("UserId", ""), transform.name, isOwned =>
         {
             unityContext.Post(_ =>

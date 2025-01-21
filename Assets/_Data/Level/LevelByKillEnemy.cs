@@ -13,10 +13,12 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     [SerializeField] protected int levelCurrent = 1;
     public int LevelCurrent => levelCurrent;
     [SerializeField] protected int enemiesKilled = 0;
+    [SerializeField] protected BossCtrl bossCtrl;
 
     [Header("UI")]
     public GameObject levelUpUI;  // UI hiển thị khi lên level
     public GameObject bossUI;
+    [SerializeField] protected int countShowUILevel = 1;
     
     [SerializeField]public GameObject Countdowntime;    // UI hiển thị khi đến boss level
 
@@ -31,6 +33,7 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     {
         base.Start();
         this.SetBaseLevel();
+        this.ShowLevelUpUI();
     }
 
     protected override void LoadComponents()
@@ -38,6 +41,13 @@ public class LevelByKillEnemy : BaseMonoBehaviour
         base.LoadComponents();
         this.LoadLevelSO();
         this.LoadSpawnerCtrl();
+        this.LoadBossCtrl();
+    }
+
+    protected virtual void LoadBossCtrl(){
+        if (this.bossCtrl != null) return;
+        this.bossCtrl = GameObject.Find("Boss").GetComponent<BossCtrl>();
+        Debug.LogWarning(transform.name + ": LoadBossCtrl", gameObject);
     }
 
     protected virtual void LoadSpawnerCtrl()
@@ -65,8 +75,8 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     public void EnemyKilled()
     {
         this.enemiesKilled++;
-        if(levelCurrent > 4) {
-            LevelUp();
+        if(levelCurrent > this.levelSO.Length) {
+            this.ShowBossUI();
             return;
         }
         if (this.enemiesKilled >= this.levelSO[this.levelCurrent - 1].killPerLevel)
@@ -79,9 +89,9 @@ public class LevelByKillEnemy : BaseMonoBehaviour
     protected virtual void LevelUp()
     {
         this.levelCurrent++;
-
+        if(this.levelCurrent > this.levelSO.Length) return;
         // Kiểm tra nếu đã vượt quá số level trong LevelSO
-        if (this.levelCurrent > this.levelSO.Length)
+       /*  if (this.levelCurrent > this.levelSO.Length)
         {
             int countdownTime = FindObjectOfType<CountdownTimer>()?.countdownTime ?? 0;
 
@@ -103,12 +113,13 @@ public class LevelByKillEnemy : BaseMonoBehaviour
             this.ShowBossUI();
             return;
         }
-
+ */
         // Cập nhật số enemy cần giết cho level tiếp theo
         this.spawnerCtrl.SpawnerRandom.SetRandomLimit(this.levelSO[this.levelCurrent - 1].killPerLevel);
 
         // Hiển thị UI lên level
-        this.ShowLevelUpUI();
+        if(countShowUILevel < this.levelSO.Length) this.ShowLevelUpUI();
+        countShowUILevel ++;
 
         Debug.Log("Level Up: " + this.levelCurrent);
     }
@@ -136,21 +147,15 @@ public class LevelByKillEnemy : BaseMonoBehaviour
         if (bossUI != null)
         {
             bossUI.SetActive(true);
-            Invoke(nameof(SpawnBoss), 2f); // Hiển thị UI trước khi spawn boss
+            Invoke(nameof(SpawnBoss), 3f); // Hiển thị UI trước khi spawn boss
         }
     }
 
     protected virtual void SpawnBoss()
     {
-        Debug.Log("Spawning Boss...");
+        bossUI.SetActive(false);
 
-        // Thực hiện logic spawn boss tại đây
-        Transform bossPrefab = this.spawnerCtrl.Spawner.GetPrefabByName("Boss");
-        if (bossPrefab != null)
-        {
-            this.spawnerCtrl.Spawner.Spawn(bossPrefab, Vector3.zero, Quaternion.identity);
-        }
-
-        bossUI.SetActive(false); // Ẩn UI sau khi boss xuất hiện
+        if(bossCtrl == null) return;
+        bossCtrl.gameObject.SetActive(true);
     }
 }

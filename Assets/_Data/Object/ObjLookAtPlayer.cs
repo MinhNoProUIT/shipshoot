@@ -37,7 +37,7 @@ public class ObjLookAtPlayer : ObjLookAtTarget
     }
     protected virtual void LoadValue()
     {
-        this.rotSpeed = 0.5f;
+        this.rotSpeed = 30f;
     }
     
 }

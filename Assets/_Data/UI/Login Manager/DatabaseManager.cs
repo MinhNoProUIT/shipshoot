@@ -32,7 +32,7 @@ public class DatabaseManager : BaseMonoBehaviour
     protected override void Awake()
     {
         base.Awake();
-        if (DatabaseManager.instance != null) Debug.LogError("Only 1 PlayfabManager allow to exist");
+        if (DatabaseManager.instance != null) Debug.LogWarning("Only 1 PlayfabManager allow to exist");
         DatabaseManager.instance = this;
 
         userId = PlayerPrefs.GetString("UserId", "");
@@ -63,6 +63,22 @@ public class DatabaseManager : BaseMonoBehaviour
 
         Golds.OnValueChanged += value => SaveResource("gold", value);
         Diamonds.OnValueChanged += value => SaveResource("diamonds", value);
+
+        GetOwnedSpaceships(GetUserId(), (ownedShips) =>
+        {
+            if (ownedShips != null)
+            {
+                foreach (var ship in ownedShips)
+                {
+                    Debug.Log($"Phi thuyền: {ship.Key}, Trạng thái: {ship.Value}");
+                }
+            }
+            else
+            {
+                Debug.LogError("Không thể lấy danh sách phi thuyền.");
+            }
+        });
+
     }
 
     private void LoadUserData(string userId, Action onComplete)
@@ -274,6 +290,38 @@ public class DatabaseManager : BaseMonoBehaviour
         });
     }
 
+    public void GetOwnedSpaceships(string userId, Action<Dictionary<string, int>> callback)
+    {
+        DatabaseReference ownedShipsRef = dbReference.Child("users").Child(userId).Child("ownedSpaceships");
+
+        ownedShipsRef.GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError($"Lỗi khi lấy danh sách phi thuyền: {task.Exception}");
+                callback?.Invoke(null); // Trả về null nếu có lỗi
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                Dictionary<string, int> ownedSpaceships = new Dictionary<string, int>();
+
+                if (snapshot.Exists && snapshot.HasChildren)
+                {
+                    foreach (var childSnapshot in snapshot.Children)
+                    {
+                        string shipId = childSnapshot.Key;
+                        int isOwned = childSnapshot.Value != null && childSnapshot.Value.ToString() == "1" ? 1 : 0;
+                        ownedSpaceships[shipId] = isOwned;
+                    }
+                }
+
+                callback?.Invoke(ownedSpaceships); // Trả về danh sách phi thuyền đã sở hữu
+            }
+        });
+    }
+
+
 
     /// <summary>
     /// Thêm spaceship vào danh sách sở hữu.
@@ -346,5 +394,51 @@ public class DatabaseManager : BaseMonoBehaviour
             }
         });
     }
+
+    public void AddResource(string resourceKey, int amount, Action<bool> callback = null)
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            Debug.LogError("UserId chưa được thiết lập!");
+            callback?.Invoke(false);
+            return;
+        }
+
+        DatabaseReference resourceRef = dbReference.Child("users").Child(GetUserId()).Child("resources").Child(resourceKey);
+
+        resourceRef.GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsFaulted)
+            {
+                Debug.LogError($"Lỗi khi lấy tài nguyên {resourceKey}: {task.Exception}");
+                callback?.Invoke(false);
+            }
+            else if (task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+
+                int currentValue = snapshot.Exists && snapshot.Value != null
+                    ? int.Parse(snapshot.Value.ToString())
+                    : 0;
+
+                int newValue = currentValue + amount;
+
+                resourceRef.SetValueAsync(newValue).ContinueWith(setTask =>
+                {
+                    if (setTask.IsFaulted)
+                    {
+                        Debug.LogError($"Lỗi khi cập nhật tài nguyên {resourceKey}: {setTask.Exception}");
+                        callback?.Invoke(false);
+                    }
+                    else
+                    {
+                        Debug.Log($"Tài nguyên {resourceKey} đã được cập nhật thành công: {newValue}");
+                        callback?.Invoke(true);
+                    }
+                });
+            }
+        });
+    }
+
 
 }

@@ -9,6 +9,7 @@ public class SpawnerRandom : BaseMonoBehaviour
     [SerializeField] protected float randomDelay = 1f;
     [SerializeField] protected float randomTimer = 0f;
     [SerializeField] protected float randomLimit = 9f;
+    [SerializeField] protected int enemiesCurrent = 0;
 
     protected override void LoadComponents()
     {
@@ -45,16 +46,18 @@ public class SpawnerRandom : BaseMonoBehaviour
         Transform prefab = this.spawnerCtrl.Spawner.RandomPrefab();
         Transform obj = this.spawnerCtrl.Spawner.Spawn(prefab, pos, rot);
         obj.gameObject.SetActive(true);
+
+        enemiesCurrent++;
     }
 
     protected virtual bool RandomReachLimit()
     {
-        int currentJunk = this.spawnerCtrl.Spawner.SpawnedCount;
-        return currentJunk >= this.randomLimit;
+        return enemiesCurrent > this.randomLimit;
     }
 
     public virtual void SetRandomLimit(int limit)
     {
         this.randomLimit = limit;
+        this.enemiesCurrent = 0;
     }
 }

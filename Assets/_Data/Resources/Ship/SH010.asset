@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: SH010
   m_EditorClassIdentifier: 
   ShipId: 10
-  ShipName: Ship10
-  Description: 
+  ShipName: Astroglide I
+  Description: A luxurious cruise ship designed for long-term space exploration with
+    maximum comfort.
   sprite: {fileID: 21300000, guid: d473cfeac98297b47864ddd0ceecf8b3, type: 3}
   dameMax: 60
   hpMax: 300

@@ -8,6 +8,7 @@ using Firebase;
 using UnityEngine.EventSystems;
 using System;
 using System.Threading;
+using DG.Tweening;
 
 public class EmailRegisterManager : BaseAuthManager
 {
@@ -18,7 +19,32 @@ public class EmailRegisterManager : BaseAuthManager
     [SerializeField] private TextMeshProUGUI backToLoginText;
     [SerializeField] protected Transform loginManager;
 
+    [SerializeField] protected Transform registerSuccessful;
+    [SerializeField] protected Transform registerFailed;
+
     private SynchronizationContext mainThreadContext;
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        AppearanceEffect();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        CloseEffect();
+    }
+
+    protected virtual void AppearanceEffect(){
+        transform.localScale = Vector3.zero; // Đặt scale ban đầu là 0,0,0
+        transform.DOScale(new Vector3(6,9,1), 0.5f).SetEase(Ease.OutBack);
+    }
+
+    protected virtual void CloseEffect()
+    {
+        transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack); // Scale xuống 0,0,0 trong 0.5s
+    }
 
 
     protected override void Start()
@@ -63,6 +89,9 @@ public class EmailRegisterManager : BaseAuthManager
 
                 mainThreadContext.Post(_ =>
                 {
+                    registerFailed.gameObject.SetActive(true);
+                    gameObject.SetActive(false);
+
                     switch (errorCode)
                     {
                         case AuthError.EmailAlreadyInUse:
@@ -94,11 +123,14 @@ public class EmailRegisterManager : BaseAuthManager
 
                     // Kiểm tra xem phương thức có được gọi không
                     Debug.Log("Gọi OnBackToLoginClicked");
-                    OnBackToLoginClicked();
+                    registerSuccessful.gameObject.SetActive(true);
+                    gameObject.SetActive(false);
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"An error occurred: {ex.Message}");
+                    Debug.LogWarning($"An error occurred: {ex.Message}");
+                    registerFailed.gameObject.SetActive(true);
+                    gameObject.SetActive(false);
                 }
             }, null);
         });

@@ -4,13 +4,21 @@ using UnityEngine;
 
 public class ShipDamageReceiver : DamageReceiver
 {
+
+    [SerializeField] LoserManager loserManager;
+    
     protected override void OnDead()
     {
-        //Nothing for
+        this.shipCtrl.Inventory.GetQuantityByInventory();
+        this.countdownTimer.GetCountdownTimerCurrent();
+        if(loserManager == null) return;
+        loserManager.gameObject.SetActive(true);
     }
 
     [SerializeField] protected ShipCtrl shipCtrl;
     public ShipCtrl ShipCtrl => shipCtrl;
+
+    [SerializeField] protected CountdownTimer countdownTimer;
 
     protected override void Start()
     {
@@ -23,6 +31,22 @@ public class ShipDamageReceiver : DamageReceiver
     {
         base.LoadComponents();
         LoadShipCtrl();
+        LoadLoserManager();
+        LoadCountdownTimer();
+    }
+
+    protected virtual void LoadCountdownTimer(){
+        if(this.countdownTimer!=null) return;
+        this.countdownTimer = GameObject.Find("CountdownTimer").GetComponent<CountdownTimer>();
+        Debug.LogWarning(transform.name + ": LoadCountdownTimer", gameObject);
+
+    }
+
+    protected virtual void LoadLoserManager(){
+        if(this.loserManager!=null) return;
+        this.loserManager = GameObject.Find("Loser").GetComponent<LoserManager>();
+        Debug.LogWarning(transform.name + ": LoadLoserManager", gameObject);
+
     }
 
     protected virtual void LoadShipCtrl(){

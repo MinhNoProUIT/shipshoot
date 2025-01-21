@@ -25,7 +25,8 @@ public class ShipShooting : ObjShooting
 
         newBullet.gameObject.SetActive(true);
         BulletCtrl bulletCtrl = newBullet.GetComponent<BulletCtrl>();
-        bulletCtrl.SetShotter(transform.parent);
+        if(bulletCtrl==null) return;
+        //bulletCtrl.SetShotter(transform.parent);
     }
 
     // Start is called before the first frame update

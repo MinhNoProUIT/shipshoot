@@ -118,4 +118,15 @@ public class Inventory : BaseMonoBehaviour
             if (deductCount <= 0) break;
         }
     }
+
+    public void GetQuantityByInventory(){
+        foreach(ItemInventory item in items){
+            string itemcode = item.itemProfile.itemCode.ToString();
+            int quantity = item.itemCount;
+            Debug.LogWarning($"{itemcode}: {quantity}");
+
+            PlayerPrefs.SetInt(itemcode, quantity);
+        }
+        PlayerPrefs.Save();
+    }
 }

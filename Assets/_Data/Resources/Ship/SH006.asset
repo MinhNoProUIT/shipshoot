@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: SH006
   m_EditorClassIdentifier: 
   ShipId: 6
-  ShipName: Ship6
-  Description: 
+  ShipName: Lunaris I
+  Description: 'An unmanned survey craft designed for data collection from distant
+    moons.  '
   sprite: {fileID: 21300000, guid: 6916cfcca9a938049ad4506e77840bac, type: 3}
   dameMax: 30
   hpMax: 120

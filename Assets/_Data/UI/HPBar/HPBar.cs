@@ -8,6 +8,8 @@ public class HPBar : BaseMonoBehaviour
     [Header("HP Bar")]
 
     [SerializeField] protected ShootableObjectCtrl shootableObjectCtrl;
+    [SerializeField] protected ShipCtrl shipCtrl;
+    [SerializeField] protected BossCtrl bossCtrl;
     [SerializeField] protected ShipSliderHP shipSliderHp;
     [SerializeField] protected FollowTarget followTarget;
     [SerializeField] protected Spawner spawner;
@@ -47,7 +49,34 @@ public class HPBar : BaseMonoBehaviour
 
     protected virtual void Update()
     {
-        if (shootableObjectCtrl == null) return;
+        if (shootableObjectCtrl != null && shipCtrl == null && bossCtrl == null) UpdateWithEnemy();
+        else if(shootableObjectCtrl == null && shipCtrl != null && bossCtrl == null) UpdateWithShip();
+        else if(shootableObjectCtrl == null && shipCtrl == null && bossCtrl != null) UpdateWithBoss();
+    }
+
+    protected virtual void UpdateWithBoss(){
+        this.maxHP = bossCtrl.BossDameReceiver.HPMax;
+        this.currentHP = bossCtrl.BossDameReceiver.HP;
+
+        bool isDead = bossCtrl.BossDameReceiver.IsDead();
+        if (isDead) this.spawner.Despawn(transform);
+
+        shipSliderHp.SetCurrentHp(this.currentHP);
+        shipSliderHp.SetMaxHp(this.maxHP);
+    }
+
+    protected virtual void UpdateWithShip(){
+        this.maxHP = shipCtrl.DamageReceiver.HPMax;
+        this.currentHP = shipCtrl.DamageReceiver.HP;
+
+        bool isDead = shipCtrl.DamageReceiver.IsDead();
+        if (isDead) this.spawner.Despawn(transform);
+
+        shipSliderHp.SetCurrentHp(this.currentHP);
+        shipSliderHp.SetMaxHp(this.maxHP);
+    }
+
+    protected virtual void UpdateWithEnemy(){
         this.maxHP = shootableObjectCtrl.DamageReceiver.HPMax;
         this.currentHP = shootableObjectCtrl.DamageReceiver.HP;
 
@@ -56,7 +85,6 @@ public class HPBar : BaseMonoBehaviour
 
         shipSliderHp.SetCurrentHp(this.currentHP);
         shipSliderHp.SetMaxHp(this.maxHP);
-
     }
 
     public virtual void SetFollowTarget(Transform target)
@@ -67,6 +95,14 @@ public class HPBar : BaseMonoBehaviour
     public virtual void SetObjectCtrl(ShootableObjectCtrl shootableObjectCtrl)
     {
         this.shootableObjectCtrl = shootableObjectCtrl;
+    }
+
+    public virtual void SetShipCtrl(ShipCtrl shipCtrl){
+        this.shipCtrl = shipCtrl;
+    }
+
+    public virtual void SetBossCtrl(BossCtrl bossCtrl){
+        this.bossCtrl = bossCtrl;
     }
 
 }
